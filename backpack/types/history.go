@@ -23,7 +23,7 @@ type FundingPayment struct {
 	Payment     string `json:"payment"`
 	FundingRate string `json:"fundingRate,omitempty"`
 	MarkPrice   string `json:"markPrice,omitempty"`
-	Timestamp   int64  `json:"timestamp"`
+	Timestamp   string `json:"timestamp"`
 }
 
 // Settlement represents a settlement record.
@@ -32,7 +32,7 @@ type Settlement struct {
 	SettlePrice  string `json:"settlePrice"`
 	Quantity     string `json:"quantity"`
 	PnL          string `json:"pnl"`
-	Timestamp    int64  `json:"timestamp"`
+	Timestamp    string `json:"timestamp"`
 }
 
 // BorrowHistoryItem represents a borrow history record.
@@ -41,7 +41,7 @@ type BorrowHistoryItem struct {
 	Symbol    string                    `json:"symbol"`
 	Quantity  string                    `json:"quantity"`
 	EventType enums.BorrowLendEventType `json:"eventType"`
-	Timestamp int64                     `json:"timestamp"`
+	Timestamp string                    `json:"timestamp"`
 }
 
 // InterestHistoryItem represents an interest payment record.
@@ -49,7 +49,7 @@ type InterestHistoryItem struct {
 	Symbol    string `json:"symbol"`
 	Interest  string `json:"interest"`
 	Rate      string `json:"rate,omitempty"`
-	Timestamp int64  `json:"timestamp"`
+	Timestamp string `json:"timestamp"`
 }
 
 // DustHistoryItem represents a dust conversion record.
@@ -58,7 +58,7 @@ type DustHistoryItem struct {
 	FromAmount string `json:"fromAmount"`
 	ToSymbol   string `json:"toSymbol"`
 	ToAmount   string `json:"toAmount"`
-	Timestamp  int64  `json:"timestamp"`
+	Timestamp  string `json:"timestamp"`
 }
 
 // HistoryParams represents common parameters for history queries.

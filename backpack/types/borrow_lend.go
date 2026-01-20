@@ -18,7 +18,7 @@ type BorrowLendMarketHistory struct {
 	Symbol     string `json:"symbol"`
 	BorrowRate string `json:"borrowRate"`
 	LendRate   string `json:"lendRate"`
-	Timestamp  int64  `json:"timestamp"`
+	Timestamp  string `json:"timestamp"`
 }
 
 // BorrowLendPosition represents a borrow/lend position.

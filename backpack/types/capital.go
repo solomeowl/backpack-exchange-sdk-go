@@ -12,12 +12,24 @@ type Balance struct {
 // Balances represents all account balances as a map of symbol to balance.
 type Balances map[string]Balance
 
-// Collateral represents collateral information.
-type Collateral struct {
-	Symbol      string `json:"symbol"`
-	Quantity    string `json:"quantity"`
-	Value       string `json:"value,omitempty"`
-	Weight      string `json:"weight,omitempty"`
+// CollateralResponse represents the collateral API response.
+type CollateralResponse struct {
+	AssetsValue      string           `json:"assetsValue"`
+	BorrowLiability  string           `json:"borrowLiability"`
+	Collateral       []CollateralItem `json:"collateral"`
+}
+
+// CollateralItem represents a single collateral item.
+type CollateralItem struct {
+	Symbol            string `json:"symbol"`
+	AssetMarkPrice    string `json:"assetMarkPrice"`
+	AvailableQuantity string `json:"availableQuantity"`
+	BalanceNotional   string `json:"balanceNotional"`
+	CollateralValue   string `json:"collateralValue"`
+	CollateralWeight  string `json:"collateralWeight"`
+	LendQuantity      string `json:"lendQuantity"`
+	OpenOrderQuantity string `json:"openOrderQuantity"`
+	TotalQuantity     string `json:"totalQuantity"`
 }
 
 // Deposit represents a deposit record.

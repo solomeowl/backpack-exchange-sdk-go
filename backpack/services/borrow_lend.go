@@ -2,8 +2,8 @@ package services
 
 import (
 	"context"
-	"strconv"
 
+	"github.com/solomeowl/backpack-exchange-sdk-go/backpack/enums"
 	"github.com/solomeowl/backpack-exchange-sdk-go/backpack/types"
 )
 
@@ -71,24 +71,18 @@ func (s *BorrowLendMarketsService) GetMarkets(ctx context.Context) ([]types.Borr
 
 // GetMarketHistoryParams represents parameters for getting market history.
 type GetMarketHistoryParams struct {
-	Symbol    string
-	StartTime int64
-	EndTime   int64
-	Limit     int
+	Interval enums.BorrowLendMarketHistoryInterval // Required
+	Symbol   string                                // Optional
 }
 
 // GetMarketHistory retrieves historical borrow/lend market data.
 func (s *BorrowLendMarketsService) GetMarketHistory(ctx context.Context, params GetMarketHistoryParams) ([]types.BorrowLendMarketHistory, error) {
 	var result []types.BorrowLendMarketHistory
-	queryParams := map[string]string{"symbol": params.Symbol}
-	if params.StartTime > 0 {
-		queryParams["startTime"] = strconv.FormatInt(params.StartTime, 10)
+	queryParams := map[string]string{
+		"interval": string(params.Interval),
 	}
-	if params.EndTime > 0 {
-		queryParams["endTime"] = strconv.FormatInt(params.EndTime, 10)
-	}
-	if params.Limit > 0 {
-		queryParams["limit"] = strconv.Itoa(params.Limit)
+	if params.Symbol != "" {
+		queryParams["symbol"] = params.Symbol
 	}
 	if err := s.client.Get(ctx, "api/v1/borrowLend/markets/history", queryParams, &result); err != nil {
 		return nil, err

@@ -236,8 +236,8 @@ func borrowLendExample(ctx context.Context, client *backpack.Client) {
 
 	// Get historical market data
 	history, err := client.BorrowLendMarkets.GetMarketHistory(ctx, services.GetMarketHistoryParams{
-		Symbol: "USDC",
-		Limit:  5,
+		Interval: enums.BorrowLendMarketHistoryInterval1d,
+		Symbol:   "USDC",
 	})
 	if err != nil {
 		log.Printf("Error getting market history: %v", err)

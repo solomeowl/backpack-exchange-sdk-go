@@ -29,12 +29,12 @@ func (s *CapitalService) GetBalances(ctx context.Context) (types.Balances, error
 }
 
 // GetCollateral retrieves account collateral information.
-func (s *CapitalService) GetCollateral(ctx context.Context) ([]types.Collateral, error) {
-	var result []types.Collateral
+func (s *CapitalService) GetCollateral(ctx context.Context) (*types.CollateralResponse, error) {
+	var result types.CollateralResponse
 	if err := s.client.GetAuthenticated(ctx, "api/v1/capital/collateral", nil, "collateralQuery", &result); err != nil {
 		return nil, err
 	}
-	return result, nil
+	return &result, nil
 }
 
 // GetDepositsParams represents parameters for getting deposits.

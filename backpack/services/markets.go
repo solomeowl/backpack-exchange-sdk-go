@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 
 	"github.com/solomeowl/backpack-exchange-sdk-go/backpack/enums"
@@ -115,14 +116,19 @@ func (s *MarketsService) GetKlines(ctx context.Context, params GetKlinesParams) 
 	return result, nil
 }
 
-// GetMarkPrice retrieves the mark price for a perpetual market.
+// GetMarkPrice retrieves the mark price for a specific perpetual market.
+// Note: This filters the result from GetMarkPrices by symbol.
 func (s *MarketsService) GetMarkPrice(ctx context.Context, symbol string) (*types.MarkPrice, error) {
-	var result types.MarkPrice
-	params := map[string]string{"symbol": symbol}
-	if err := s.client.Get(ctx, "api/v1/markPrice", params, &result); err != nil {
+	prices, err := s.GetMarkPrices(ctx)
+	if err != nil {
 		return nil, err
 	}
-	return &result, nil
+	for _, p := range prices {
+		if p.Symbol == symbol {
+			return &p, nil
+		}
+	}
+	return nil, fmt.Errorf("mark price not found for symbol: %s", symbol)
 }
 
 // GetMarkPrices retrieves mark prices for all perpetual markets.
@@ -136,12 +142,15 @@ func (s *MarketsService) GetMarkPrices(ctx context.Context) ([]types.MarkPrice, 
 
 // GetOpenInterest retrieves open interest for a perpetual market.
 func (s *MarketsService) GetOpenInterest(ctx context.Context, symbol string) (*types.OpenInterest, error) {
-	var result types.OpenInterest
+	var result []types.OpenInterest
 	params := map[string]string{"symbol": symbol}
 	if err := s.client.Get(ctx, "api/v1/openInterest", params, &result); err != nil {
 		return nil, err
 	}
-	return &result, nil
+	if len(result) == 0 {
+		return nil, fmt.Errorf("open interest not found for symbol: %s", symbol)
+	}
+	return &result[0], nil
 }
 
 // GetFundingRates retrieves funding rate information.
