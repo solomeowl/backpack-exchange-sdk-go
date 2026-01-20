@@ -53,7 +53,7 @@ func (s *TradesService) GetHistoricalTrades(ctx context.Context, params GetHisto
 	if params.Offset > 0 {
 		queryParams["offset"] = strconv.Itoa(params.Offset)
 	}
-	if err := s.client.Get(ctx, "api/v1/trades/historical", queryParams, &result); err != nil {
+	if err := s.client.Get(ctx, "api/v1/trades/history", queryParams, &result); err != nil {
 		return nil, err
 	}
 	return result, nil

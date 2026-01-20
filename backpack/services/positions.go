@@ -19,7 +19,7 @@ func NewPositionsService(client HTTPClient) *PositionsService {
 // GetPositions retrieves all futures positions.
 func (s *PositionsService) GetPositions(ctx context.Context) ([]types.Position, error) {
 	var result []types.Position
-	if err := s.client.GetAuthenticated(ctx, "api/v1/positions", nil, "positionQuery", &result); err != nil {
+	if err := s.client.GetAuthenticated(ctx, "api/v1/position", nil, "positionQuery", &result); err != nil {
 		return nil, err
 	}
 	return result, nil

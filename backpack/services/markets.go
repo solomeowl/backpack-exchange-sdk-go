@@ -145,11 +145,11 @@ func (s *MarketsService) GetOpenInterest(ctx context.Context, symbol string) (*t
 }
 
 // GetFundingRates retrieves funding rate information.
-func (s *MarketsService) GetFundingRates(ctx context.Context, symbol string) (*types.FundingRate, error) {
-	var result types.FundingRate
+func (s *MarketsService) GetFundingRates(ctx context.Context, symbol string) ([]types.FundingRate, error) {
+	var result []types.FundingRate
 	params := map[string]string{"symbol": symbol}
-	if err := s.client.Get(ctx, "api/v1/fundingRate", params, &result); err != nil {
+	if err := s.client.Get(ctx, "api/v1/fundingRates", params, &result); err != nil {
 		return nil, err
 	}
-	return &result, nil
+	return result, nil
 }

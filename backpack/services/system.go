@@ -31,12 +31,12 @@ func (s *SystemService) Ping(ctx context.Context) error {
 }
 
 // GetTime retrieves the server time.
-func (s *SystemService) GetTime(ctx context.Context) (*types.ServerTime, error) {
-	var result types.ServerTime
+func (s *SystemService) GetTime(ctx context.Context) (int64, error) {
+	var result int64
 	if err := s.client.Get(ctx, "api/v1/time", nil, &result); err != nil {
-		return nil, err
+		return 0, err
 	}
-	return &result, nil
+	return result, nil
 }
 
 // GetWallets retrieves available wallet addresses for deposits.

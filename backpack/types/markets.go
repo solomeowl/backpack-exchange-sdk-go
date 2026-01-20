@@ -32,7 +32,7 @@ type Ticker struct {
 	Low                string `json:"low,omitempty"`
 	Volume             string `json:"volume,omitempty"`
 	QuoteVolume        string `json:"quoteVolume,omitempty"`
-	Trades             int64  `json:"trades,omitempty"`
+	Trades             string `json:"trades,omitempty"`
 }
 
 // OrderBookLevel represents a price level in the order book.
@@ -45,7 +45,8 @@ type OrderBookLevel struct {
 type OrderBook struct {
 	Bids         [][]string `json:"bids"`
 	Asks         [][]string `json:"asks"`
-	LastUpdateID int64      `json:"lastUpdateId,omitempty"`
+	LastUpdateID string     `json:"lastUpdateId,omitempty"`
+	Timestamp    int64      `json:"timestamp,omitempty"`
 }
 
 // Kline represents a candlestick/kline.

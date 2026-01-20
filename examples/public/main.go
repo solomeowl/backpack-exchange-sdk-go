@@ -35,7 +35,7 @@ func main() {
 	if err != nil {
 		log.Printf("Error getting time: %v", err)
 	} else {
-		fmt.Printf("Server time: %d\n", serverTime.ServerTime)
+		fmt.Printf("Server time: %d\n", serverTime)
 	}
 
 	// Get all markets

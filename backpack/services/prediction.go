@@ -19,7 +19,7 @@ func NewPredictionService(client HTTPClient) *PredictionService {
 // GetMarkets retrieves all prediction markets.
 func (s *PredictionService) GetMarkets(ctx context.Context) ([]types.PredictionMarket, error) {
 	var result []types.PredictionMarket
-	if err := s.client.Get(ctx, "api/v1/prediction/markets", nil, &result); err != nil {
+	if err := s.client.Get(ctx, "api/v1/prediction", nil, &result); err != nil {
 		return nil, err
 	}
 	return result, nil
