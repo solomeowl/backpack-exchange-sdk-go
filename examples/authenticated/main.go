@@ -48,10 +48,10 @@ func main() {
 	if err != nil {
 		log.Printf("Error getting balances: %v", err)
 	} else {
-		for _, balance := range balances {
+		for symbol, balance := range balances {
 			if balance.Available != "0" || balance.Locked != "0" {
 				fmt.Printf("  %s: Available=%s, Locked=%s\n",
-					balance.Symbol, balance.Available, balance.Locked)
+					symbol, balance.Available, balance.Locked)
 			}
 		}
 	}

@@ -14,7 +14,7 @@ type Fill struct {
 	Fee           string     `json:"fee,omitempty"`
 	FeeSymbol     string     `json:"feeSymbol,omitempty"`
 	IsMaker       bool       `json:"isMaker"`
-	Timestamp     int64      `json:"timestamp"`
+	Timestamp     string     `json:"timestamp"`
 }
 
 // FundingPayment represents a funding payment record.

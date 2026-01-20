@@ -19,8 +19,9 @@ func NewCapitalService(client HTTPClient) *CapitalService {
 }
 
 // GetBalances retrieves account balances.
-func (s *CapitalService) GetBalances(ctx context.Context) ([]types.Balance, error) {
-	var result []types.Balance
+// Returns a map of symbol to balance (e.g., {"SOL": {Available: "1.5", ...}, "USDC": {...}})
+func (s *CapitalService) GetBalances(ctx context.Context) (types.Balances, error) {
+	var result types.Balances
 	if err := s.client.GetAuthenticated(ctx, "api/v1/capital", nil, "balanceQuery", &result); err != nil {
 		return nil, err
 	}

@@ -2,14 +2,15 @@ package types
 
 import "github.com/solomeowl/backpack-exchange-sdk-go/backpack/enums"
 
-// Balance represents an account balance.
+// Balance represents an account balance for an asset.
 type Balance struct {
-	Symbol    string `json:"symbol"`
 	Available string `json:"available"`
 	Locked    string `json:"locked"`
 	Staked    string `json:"staked,omitempty"`
-	Total     string `json:"total,omitempty"`
 }
+
+// Balances represents all account balances as a map of symbol to balance.
+type Balances map[string]Balance
 
 // Collateral represents collateral information.
 type Collateral struct {
@@ -21,7 +22,7 @@ type Collateral struct {
 
 // Deposit represents a deposit record.
 type Deposit struct {
-	ID              string              `json:"id"`
+	ID              int64               `json:"id"`
 	Symbol          string              `json:"symbol"`
 	Quantity        string              `json:"quantity"`
 	Status          enums.DepositStatus `json:"status"`
@@ -29,7 +30,7 @@ type Deposit struct {
 	TransactionHash string              `json:"transactionHash,omitempty"`
 	FromAddress     string              `json:"fromAddress,omitempty"`
 	Confirmations   int                 `json:"confirmations,omitempty"`
-	CreatedAt       int64               `json:"createdAt,omitempty"`
+	CreatedAt       string              `json:"createdAt,omitempty"`
 }
 
 // DepositAddress represents a deposit address.
@@ -41,7 +42,7 @@ type DepositAddress struct {
 
 // Withdrawal represents a withdrawal record.
 type Withdrawal struct {
-	ID              string                 `json:"id"`
+	ID              int64                  `json:"id"`
 	Symbol          string                 `json:"symbol"`
 	Quantity        string                 `json:"quantity"`
 	Fee             string                 `json:"fee,omitempty"`
@@ -49,7 +50,7 @@ type Withdrawal struct {
 	Blockchain      enums.Blockchain       `json:"blockchain"`
 	ToAddress       string                 `json:"toAddress"`
 	TransactionHash string                 `json:"transactionHash,omitempty"`
-	CreatedAt       int64                  `json:"createdAt,omitempty"`
+	CreatedAt       string                 `json:"createdAt,omitempty"`
 }
 
 // WithdrawalRequest represents a withdrawal request.

@@ -21,8 +21,8 @@ type Order struct {
 	TriggerPrice          string             `json:"triggerPrice,omitempty"`
 	TriggerQuantity       string             `json:"triggerQuantity,omitempty"`
 	SelfTradePrevention   string             `json:"selfTradePrevention,omitempty"`
-	CreatedAt             int64              `json:"createdAt,omitempty"`
-	UpdatedAt             int64              `json:"updatedAt,omitempty"`
+	CreatedAt             string             `json:"createdAt,omitempty"`
+	UpdatedAt             string             `json:"updatedAt,omitempty"`
 }
 
 // ExecuteOrderParams represents parameters for executing an order.
