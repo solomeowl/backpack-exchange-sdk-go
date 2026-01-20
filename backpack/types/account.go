@@ -1,28 +1,29 @@
 package types
 
-// Account represents account information.
+// Account represents account summary from GET /api/v1/account.
 type Account struct {
-	AccountType          string `json:"accountType,omitempty"`
-	TotalEquity          string `json:"totalEquity,omitempty"`
-	TotalCollateral      string `json:"totalCollateral,omitempty"`
-	AvailableCollateral  string `json:"availableCollateral,omitempty"`
-	InitialMargin        string `json:"initialMargin,omitempty"`
-	MaintenanceMargin    string `json:"maintenanceMargin,omitempty"`
-	UnrealizedPnl        string `json:"unrealizedPnl,omitempty"`
-	RealizedPnl          string `json:"realizedPnl,omitempty"`
-	Leverage             string `json:"leverage,omitempty"`
-	AutoBorrow           bool   `json:"autoBorrow,omitempty"`
-	AutoLend             bool   `json:"autoLend,omitempty"`
-	AutoRepay            bool   `json:"autoRepay,omitempty"`
-	AutoRedeem           bool   `json:"autoRedeem,omitempty"`
+	AutoBorrowSettlements bool   `json:"autoBorrowSettlements"`
+	AutoLend              bool   `json:"autoLend"`
+	AutoRealizePnl        bool   `json:"autoRealizePnl"`
+	AutoRepayBorrows      bool   `json:"autoRepayBorrows"`
+	BorrowLimit           string `json:"borrowLimit"`
+	FuturesMakerFee       string `json:"futuresMakerFee"`
+	FuturesTakerFee       string `json:"futuresTakerFee"`
+	LeverageLimit         string `json:"leverageLimit"`
+	LimitOrders           int64  `json:"limitOrders"`
+	Liquidating           bool   `json:"liquidating"`
+	PositionLimit         string `json:"positionLimit"`
+	SpotMakerFee          string `json:"spotMakerFee"`
+	SpotTakerFee          string `json:"spotTakerFee"`
+	TriggerOrders         int64  `json:"triggerOrders"`
 }
 
-// AccountSettings represents account settings for update.
+// AccountSettings represents account settings for PATCH /api/v1/account.
 type AccountSettings struct {
-	AutoBorrow bool `json:"autoBorrow,omitempty"`
-	AutoLend   bool `json:"autoLend,omitempty"`
-	AutoRepay  bool `json:"autoRepay,omitempty"`
-	AutoRedeem bool `json:"autoRedeem,omitempty"`
+	AutoBorrowSettlements *bool `json:"autoBorrowSettlements,omitempty"`
+	AutoLend              *bool `json:"autoLend,omitempty"`
+	AutoRealizePnl        *bool `json:"autoRealizePnl,omitempty"`
+	AutoRepayBorrows      *bool `json:"autoRepayBorrows,omitempty"`
 }
 
 // MaxQuantityResponse represents max quantity query response.

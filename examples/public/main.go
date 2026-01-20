@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/solomeowl/backpack-exchange-sdk-go/backpack"
 	"github.com/solomeowl/backpack-exchange-sdk-go/backpack/enums"
@@ -40,7 +41,7 @@ func main() {
 
 	// Get all markets
 	fmt.Println("\n=== Markets ===")
-	markets, err := client.Markets.GetMarkets(ctx)
+	markets, err := client.Markets.GetMarkets(ctx, nil)
 	if err != nil {
 		log.Printf("Error getting markets: %v", err)
 	} else {
@@ -56,7 +57,9 @@ func main() {
 
 	// Get ticker for a specific market
 	fmt.Println("\n=== Ticker (SOL_USDC) ===")
-	ticker, err := client.Markets.GetTicker(ctx, "SOL_USDC")
+	ticker, err := client.Markets.GetTicker(ctx, services.GetTickerParams{
+		Symbol: "SOL_USDC",
+	})
 	if err != nil {
 		log.Printf("Error getting ticker: %v", err)
 	} else {
@@ -109,14 +112,17 @@ func main() {
 	// Get klines
 	fmt.Println("\n=== Klines (SOL_USDC, 1h) ===")
 	klines, err := client.Markets.GetKlines(ctx, services.GetKlinesParams{
-		Symbol:   "SOL_USDC",
-		Interval: enums.KlineInterval1h,
-		Limit:    3,
+		Symbol:    "SOL_USDC",
+		Interval:  enums.KlineInterval1h,
+		StartTime: time.Now().Add(-24 * time.Hour).Unix(),
 	})
 	if err != nil {
 		log.Printf("Error getting klines: %v", err)
 	} else {
-		for _, kline := range klines {
+		for i, kline := range klines {
+			if i >= 3 {
+				break
+			}
 			fmt.Printf("  O: %s, H: %s, L: %s, C: %s\n",
 				kline.Open, kline.High, kline.Low, kline.Close)
 		}

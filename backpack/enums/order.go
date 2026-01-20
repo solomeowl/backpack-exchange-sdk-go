@@ -26,17 +26,17 @@ const (
 	OrderStatusFilled          OrderStatus = "Filled"
 	OrderStatusCancelled       OrderStatus = "Cancelled"
 	OrderStatusExpired         OrderStatus = "Expired"
-	OrderStatusTriggered       OrderStatus = "Triggered"
+	OrderStatusTriggerPending  OrderStatus = "TriggerPending"
+	OrderStatusTriggerFailed   OrderStatus = "TriggerFailed"
 )
 
 // SelfTradePrevention represents self-trade prevention mode.
 type SelfTradePrevention string
 
 const (
-	STPRejectTaker SelfTradePrevention = "RejectTaker"
-	STPRejectMaker SelfTradePrevention = "RejectMaker"
-	STPRejectBoth  SelfTradePrevention = "RejectBoth"
-	STPAllow       SelfTradePrevention = "Allow"
+	SelfTradePreventionRejectTaker SelfTradePrevention = "RejectTaker"
+	SelfTradePreventionRejectMaker SelfTradePrevention = "RejectMaker"
+	SelfTradePreventionRejectBoth  SelfTradePrevention = "RejectBoth"
 )
 
 // CancelOrderType represents the type of orders to cancel.
@@ -53,4 +53,54 @@ type TriggerBy string
 const (
 	TriggerByLastPrice TriggerBy = "LastPrice"
 	TriggerByMarkPrice TriggerBy = "MarkPrice"
+)
+
+// OrderExpiryReason represents the reason an order expired.
+type OrderExpiryReason string
+
+const (
+	OrderExpiryReasonAccountTradingSuspended       OrderExpiryReason = "AccountTradingSuspended"
+	OrderExpiryReasonBorrowRequiresLendRedeem      OrderExpiryReason = "BorrowRequiresLendRedeem"
+	OrderExpiryReasonFillOrKill                    OrderExpiryReason = "FillOrKill"
+	OrderExpiryReasonInsufficientBorrowableQuantity OrderExpiryReason = "InsufficientBorrowableQuantity"
+	OrderExpiryReasonInsufficientFunds             OrderExpiryReason = "InsufficientFunds"
+	OrderExpiryReasonInsufficientLiquidity         OrderExpiryReason = "InsufficientLiquidity"
+	OrderExpiryReasonInvalidPrice                  OrderExpiryReason = "InvalidPrice"
+	OrderExpiryReasonInvalidQuantity               OrderExpiryReason = "InvalidQuantity"
+	OrderExpiryReasonImmediateOrCancel             OrderExpiryReason = "ImmediateOrCancel"
+	OrderExpiryReasonInsufficientMargin            OrderExpiryReason = "InsufficientMargin"
+	OrderExpiryReasonLiquidation                   OrderExpiryReason = "Liquidation"
+	OrderExpiryReasonNegativeEquity                OrderExpiryReason = "NegativeEquity"
+	OrderExpiryReasonPostOnlyMode                  OrderExpiryReason = "PostOnlyMode"
+	OrderExpiryReasonPostOnlyTaker                 OrderExpiryReason = "PostOnlyTaker"
+	OrderExpiryReasonPriceOutOfBounds              OrderExpiryReason = "PriceOutOfBounds"
+	OrderExpiryReasonReduceOnlyNotReduced          OrderExpiryReason = "ReduceOnlyNotReduced"
+	OrderExpiryReasonSelfTradePrevention           OrderExpiryReason = "SelfTradePrevention"
+	OrderExpiryReasonStopWithoutPosition           OrderExpiryReason = "StopWithoutPosition"
+	OrderExpiryReasonPriceImpact                   OrderExpiryReason = "PriceImpact"
+	OrderExpiryReasonUnknown                       OrderExpiryReason = "Unknown"
+	OrderExpiryReasonUserPermissions               OrderExpiryReason = "UserPermissions"
+	OrderExpiryReasonMaxStopOrdersPerPosition      OrderExpiryReason = "MaxStopOrdersPerPosition"
+	OrderExpiryReasonPositionLimit                 OrderExpiryReason = "PositionLimit"
+	OrderExpiryReasonSlippageToleranceExceeded     OrderExpiryReason = "SlippageToleranceExceeded"
+)
+
+// SystemOrderType represents the type of system order.
+type SystemOrderType string
+
+const (
+	SystemOrderTypeCollateralConversion       SystemOrderType = "CollateralConversion"
+	SystemOrderTypeFutureExpiry               SystemOrderType = "FutureExpiry"
+	SystemOrderTypeLiquidatePositionOnAdl     SystemOrderType = "LiquidatePositionOnAdl"
+	SystemOrderTypeLiquidatePositionOnBook    SystemOrderType = "LiquidatePositionOnBook"
+	SystemOrderTypeLiquidatePositionOnBackstop SystemOrderType = "LiquidatePositionOnBackstop"
+	SystemOrderTypeOrderBookClosed            SystemOrderType = "OrderBookClosed"
+)
+
+// SlippageToleranceType represents the type of slippage tolerance.
+type SlippageToleranceType string
+
+const (
+	SlippageToleranceTypeTickSize SlippageToleranceType = "TickSize"
+	SlippageToleranceTypePercent  SlippageToleranceType = "Percent"
 )

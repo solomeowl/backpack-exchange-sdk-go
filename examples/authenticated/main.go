@@ -38,8 +38,9 @@ func main() {
 	if err != nil {
 		log.Printf("Error getting account: %v", err)
 	} else {
-		fmt.Printf("Total Equity: %s\n", account.TotalEquity)
-		fmt.Printf("Available Collateral: %s\n", account.AvailableCollateral)
+		fmt.Printf("Leverage Limit: %s\n", account.LeverageLimit)
+		fmt.Printf("Borrow Limit: %s\n", account.BorrowLimit)
+		fmt.Printf("Auto Lend: %v\n", account.AutoLend)
 	}
 
 	// Get balances

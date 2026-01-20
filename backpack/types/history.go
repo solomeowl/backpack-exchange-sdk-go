@@ -2,28 +2,30 @@ package types
 
 import "github.com/solomeowl/backpack-exchange-sdk-go/backpack/enums"
 
-// Fill represents a trade fill.
+// Fill represents a trade fill from OrderFill schema.
 type Fill struct {
-	ID            string     `json:"id"`
-	OrderID       string     `json:"orderId,omitempty"`
-	Symbol        string     `json:"symbol"`
-	Side          enums.Side `json:"side"`
-	Price         string     `json:"price"`
-	Quantity      string     `json:"quantity"`
-	QuoteQuantity string     `json:"quoteQuantity,omitempty"`
-	Fee           string     `json:"fee,omitempty"`
-	FeeSymbol     string     `json:"feeSymbol,omitempty"`
-	IsMaker       bool       `json:"isMaker"`
-	Timestamp     string     `json:"timestamp"`
+	ClientID        string                `json:"clientId,omitempty"`
+	Fee             string                `json:"fee"`
+	FeeSymbol       string                `json:"feeSymbol"`
+	IsMaker         bool                  `json:"isMaker"`
+	OrderID         string                `json:"orderId"`
+	Price           string                `json:"price"`
+	Quantity        string                `json:"quantity"`
+	Side            enums.Side            `json:"side"`
+	Symbol          string                `json:"symbol"`
+	SystemOrderType enums.SystemOrderType `json:"systemOrderType,omitempty"`
+	Timestamp       string                `json:"timestamp"`
+	TradeID         int64                 `json:"tradeId,omitempty"`
 }
 
 // FundingPayment represents a funding payment record.
 type FundingPayment struct {
-	Symbol      string `json:"symbol"`
-	Payment     string `json:"payment"`
-	FundingRate string `json:"fundingRate,omitempty"`
-	MarkPrice   string `json:"markPrice,omitempty"`
-	Timestamp   string `json:"timestamp"`
+	UserID               int32  `json:"userId"`
+	SubaccountID         uint16 `json:"subaccountId,omitempty"`
+	Symbol               string `json:"symbol"`
+	Quantity             string `json:"quantity"`
+	IntervalEndTimestamp string `json:"intervalEndTimestamp"`
+	FundingRate          string `json:"fundingRate"`
 }
 
 // Settlement represents a settlement record.
@@ -46,20 +48,18 @@ type BorrowHistoryItem struct {
 
 // InterestHistoryItem represents an interest payment record.
 type InterestHistoryItem struct {
-	Symbol    string `json:"symbol"`
-	Interest  string `json:"interest"`
-	Rate      string `json:"rate,omitempty"`
-	Timestamp string `json:"timestamp"`
+	PaymentType   enums.PaymentType `json:"paymentType"`
+	InterestRate  string            `json:"interestRate"`
+	Interval      string            `json:"interval"`
+	MarketSymbol  string            `json:"marketSymbol"`
+	PositionID    string            `json:"positionId"`
+	Quantity      string            `json:"quantity"`
+	Symbol        string            `json:"symbol"`
+	Timestamp     string            `json:"timestamp"`
 }
 
-// DustHistoryItem represents a dust conversion record.
-type DustHistoryItem struct {
-	FromSymbol string `json:"fromSymbol"`
-	FromAmount string `json:"fromAmount"`
-	ToSymbol   string `json:"toSymbol"`
-	ToAmount   string `json:"toAmount"`
-	Timestamp  string `json:"timestamp"`
-}
+// DustHistoryItem represents a dust conversion record (same as DustConversion).
+type DustHistoryItem = DustConversion
 
 // HistoryParams represents common parameters for history queries.
 type HistoryParams struct {
@@ -71,20 +71,31 @@ type HistoryParams struct {
 	Direction enums.SortDirection `json:"direction,omitempty"`
 }
 
-// OrderHistoryItem represents an order history record.
-type OrderHistoryItem struct {
-	Order
-	Fills []Fill `json:"fills,omitempty"`
-}
+// OrderHistoryItem represents an order history record (same as Order).
+type OrderHistoryItem = Order
 
-// PositionHistoryItem represents a position history record.
+// PositionHistoryItem represents a position history record from PositionHistoryRow schema.
 type PositionHistoryItem struct {
-	Symbol        string             `json:"symbol"`
-	Side          enums.PositionSide `json:"side"`
-	EntryPrice    string             `json:"entryPrice"`
-	ExitPrice     string             `json:"exitPrice,omitempty"`
-	Quantity      string             `json:"quantity"`
-	RealizedPnl   string             `json:"realizedPnl,omitempty"`
-	OpenTimestamp int64              `json:"openTimestamp"`
-	CloseTimestamp int64             `json:"closeTimestamp,omitempty"`
+	ID                  string               `json:"id"`
+	Symbol              string               `json:"symbol"`
+	NetQuantity         string               `json:"netQuantity"`
+	NetExposureQuantity string               `json:"netExposureQuantity"`
+	NetExposureNotional string               `json:"netExposureNotional"`
+	NetCost             string               `json:"netCost"`
+	MarkPrice           string               `json:"markPrice"`
+	EntryPrice          string               `json:"entryPrice"`
+	CumulativePnlRealized string             `json:"cumulativePnlRealized"`
+	UnrealizedPnl       string               `json:"unrealizedPnl"`
+	FundingQuantity     string               `json:"fundingQuantity"`
+	Interest            string               `json:"interest"`
+	Liquidated          string               `json:"liquidated"`
+	IMF                 string               `json:"imf"`
+	Fees                string               `json:"fees"`
+	State               enums.PositionState  `json:"state"`
+	ClosedVolume        string               `json:"closedVolume"`
+	LiquidationFees     string               `json:"liquidationFees"`
+	ClosingPrice        string               `json:"closingPrice,omitempty"`
+	AccountLeverage     string               `json:"accountLeverage,omitempty"`
+	OpenedAt            string               `json:"openedAt,omitempty"`
+	ClosedAt            string               `json:"closedAt,omitempty"`
 }

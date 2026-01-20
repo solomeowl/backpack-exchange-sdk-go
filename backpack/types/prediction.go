@@ -1,50 +1,43 @@
 package types
 
-// PredictionMarket represents a prediction market group from the API.
+// PredictionEvent represents a prediction event from GET /api/v1/prediction.
+type PredictionEvent struct {
+	Slug              string              `json:"slug"`
+	Title             string              `json:"title"`
+	PredictionMarkets []PredictionMarket  `json:"predictionMarkets"`
+	Tags              []PredictionTag     `json:"tags"`
+	Series            []PredictionSeries  `json:"series"`
+	Description       string              `json:"description"`
+	ImgURL            string              `json:"imgUrl,omitempty"`
+	EstimatedEndDate  string              `json:"estimatedEndDate,omitempty"`
+	QuoteVolume       string              `json:"quoteVolume"`
+	Resolved          bool                `json:"resolved"`
+}
+
+// PredictionMarket represents an individual prediction market within an event.
 type PredictionMarket struct {
-	Description       string                  `json:"description,omitempty"`
-	EstimatedEndDate  string                  `json:"estimatedEndDate,omitempty"`
-	ImgURL            *string                 `json:"imgUrl,omitempty"`
-	PredictionMarkets []PredictionMarketItem  `json:"predictionMarkets,omitempty"`
-	QuoteVolume       string                  `json:"quoteVolume,omitempty"`
-	Resolved          bool                    `json:"resolved,omitempty"`
-	Series            []PredictionSeries      `json:"series,omitempty"`
-	Slug              string                  `json:"slug,omitempty"`
-	Tags              []PredictionMarketTag   `json:"tags,omitempty"`
-	Title             string                  `json:"title,omitempty"`
+	MarketSymbol    string `json:"marketSymbol"`
+	Question        string `json:"question"`
+	GroupLabel      string `json:"groupLabel,omitempty"`
+	YesOutcomeLabel string `json:"yesOutcomeLabel"`
+	NoOutcomeLabel  string `json:"noOutcomeLabel"`
+	Rules           string `json:"rules"`
+	ResolvedAt      string `json:"resolvedAt,omitempty"`
+	ResolutionPrice string `json:"resolutionPrice,omitempty"`
+	ActivePrice     string `json:"activePrice"`
+	QuoteVolume     string `json:"quoteVolume"`
+	ImgURL          string `json:"imgUrl,omitempty"`
 }
 
-// PredictionMarketItem represents an individual prediction market within a group.
-type PredictionMarketItem struct {
-	ActivePrice     string  `json:"activePrice,omitempty"`
-	GroupLabel      string  `json:"groupLabel,omitempty"`
-	ImgURL          *string `json:"imgUrl,omitempty"`
-	MarketSymbol    string  `json:"marketSymbol,omitempty"`
-	NoOutcomeLabel  string  `json:"noOutcomeLabel,omitempty"`
-	Question        string  `json:"question,omitempty"`
-	QuoteVolume     string  `json:"quoteVolume,omitempty"`
-	ResolutionPrice string  `json:"resolutionPrice,omitempty"`
-	ResolvedAt      string  `json:"resolvedAt,omitempty"`
-	Rules           string  `json:"rules,omitempty"`
-	YesOutcomeLabel string  `json:"yesOutcomeLabel,omitempty"`
-}
-
-// PredictionMarketTag represents a tag associated with a prediction market group.
-type PredictionMarketTag struct {
+// PredictionTag represents a tag associated with a prediction event.
+type PredictionTag struct {
 	Slug  string `json:"slug"`
 	Title string `json:"title"`
 }
 
-// PredictionSeries represents a series that a prediction market belongs to.
+// PredictionSeries represents a series that a prediction event belongs to.
 type PredictionSeries struct {
-	Recurrence string `json:"recurrence,omitempty"`
 	Slug       string `json:"slug,omitempty"`
 	Title      string `json:"title,omitempty"`
-}
-
-// PredictionTag represents a prediction market tag from the tags endpoint.
-type PredictionTag struct {
-	ID    string `json:"id"`
-	Name  string `json:"name"`
-	Count int    `json:"count,omitempty"`
+	Recurrence string `json:"recurrence,omitempty"`
 }

@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 
 	"github.com/solomeowl/backpack-exchange-sdk-go/backpack/enums"
@@ -19,10 +18,24 @@ func NewMarketsService(client HTTPClient) *MarketsService {
 	return &MarketsService{client: client}
 }
 
+// GetMarketsParams represents parameters for getting markets.
+type GetMarketsParams struct {
+	MarketType []enums.MarketType
+}
+
 // GetMarkets retrieves all available markets.
-func (s *MarketsService) GetMarkets(ctx context.Context) ([]types.Market, error) {
+func (s *MarketsService) GetMarkets(ctx context.Context, params *GetMarketsParams) ([]types.Market, error) {
 	var result []types.Market
-	if err := s.client.Get(ctx, "api/v1/markets", nil, &result); err != nil {
+	queryParams := make(map[string]string)
+	if params != nil && len(params.MarketType) > 0 {
+		// Note: API accepts multiple marketType values
+		for i, mt := range params.MarketType {
+			if i == 0 {
+				queryParams["marketType"] = string(mt)
+			}
+		}
+	}
+	if err := s.client.Get(ctx, "api/v1/markets", queryParams, &result); err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -38,11 +51,20 @@ func (s *MarketsService) GetMarket(ctx context.Context, symbol string) (*types.M
 	return &result, nil
 }
 
+// GetTickerParams represents parameters for getting a ticker.
+type GetTickerParams struct {
+	Symbol   string
+	Interval enums.TickerInterval
+}
+
 // GetTicker retrieves ticker data for a specific market.
-func (s *MarketsService) GetTicker(ctx context.Context, symbol string) (*types.Ticker, error) {
+func (s *MarketsService) GetTicker(ctx context.Context, params GetTickerParams) (*types.Ticker, error) {
 	var result types.Ticker
-	params := map[string]string{"symbol": symbol}
-	if err := s.client.Get(ctx, "api/v1/ticker", params, &result); err != nil {
+	queryParams := map[string]string{"symbol": params.Symbol}
+	if params.Interval != "" {
+		queryParams["interval"] = string(params.Interval)
+	}
+	if err := s.client.Get(ctx, "api/v1/ticker", queryParams, &result); err != nil {
 		return nil, err
 	}
 	return &result, nil
@@ -76,8 +98,8 @@ type GetDepthParams struct {
 func (s *MarketsService) GetDepth(ctx context.Context, params GetDepthParams) (*types.OrderBook, error) {
 	var result types.OrderBook
 	queryParams := map[string]string{"symbol": params.Symbol}
-	if params.Limit > 0 {
-		queryParams["limit"] = strconv.Itoa(int(params.Limit))
+	if params.Limit != "" {
+		queryParams["limit"] = string(params.Limit)
 	}
 	if err := s.client.Get(ctx, "api/v1/depth", queryParams, &result); err != nil {
 		return nil, err
@@ -87,28 +109,26 @@ func (s *MarketsService) GetDepth(ctx context.Context, params GetDepthParams) (*
 
 // GetKlinesParams represents parameters for getting klines.
 type GetKlinesParams struct {
-	Symbol    string
-	Interval  enums.KlineInterval
-	StartTime int64
-	EndTime   int64
-	Limit     int
+	Symbol    string               // Required
+	Interval  enums.KlineInterval  // Required
+	StartTime int64                // Required: UTC timestamp in seconds
+	EndTime   int64                // Optional: UTC timestamp in seconds
+	PriceType enums.KlinePriceType // Optional: defaults to Last
 }
 
 // GetKlines retrieves kline/candlestick data for a market.
 func (s *MarketsService) GetKlines(ctx context.Context, params GetKlinesParams) ([]types.Kline, error) {
 	var result []types.Kline
 	queryParams := map[string]string{
-		"symbol":   params.Symbol,
-		"interval": string(params.Interval),
-	}
-	if params.StartTime > 0 {
-		queryParams["startTime"] = strconv.FormatInt(params.StartTime, 10)
+		"symbol":    params.Symbol,
+		"interval":  string(params.Interval),
+		"startTime": strconv.FormatInt(params.StartTime, 10),
 	}
 	if params.EndTime > 0 {
 		queryParams["endTime"] = strconv.FormatInt(params.EndTime, 10)
 	}
-	if params.Limit > 0 {
-		queryParams["limit"] = strconv.Itoa(params.Limit)
+	if params.PriceType != "" {
+		queryParams["priceType"] = string(params.PriceType)
 	}
 	if err := s.client.Get(ctx, "api/v1/klines", queryParams, &result); err != nil {
 		return nil, err
@@ -116,48 +136,66 @@ func (s *MarketsService) GetKlines(ctx context.Context, params GetKlinesParams) 
 	return result, nil
 }
 
-// GetMarkPrice retrieves the mark price for a specific perpetual market.
-// Note: This filters the result from GetMarkPrices by symbol.
-func (s *MarketsService) GetMarkPrice(ctx context.Context, symbol string) (*types.MarkPrice, error) {
-	prices, err := s.GetMarkPrices(ctx)
-	if err != nil {
-		return nil, err
-	}
-	for _, p := range prices {
-		if p.Symbol == symbol {
-			return &p, nil
-		}
-	}
-	return nil, fmt.Errorf("mark price not found for symbol: %s", symbol)
+// GetMarkPricesParams represents parameters for getting mark prices.
+type GetMarkPricesParams struct {
+	Symbol     string           // Optional
+	MarketType enums.MarketType // Optional: defaults to PERP
 }
 
-// GetMarkPrices retrieves mark prices for all perpetual markets.
-func (s *MarketsService) GetMarkPrices(ctx context.Context) ([]types.MarkPrice, error) {
+// GetMarkPrices retrieves mark prices for perpetual markets.
+func (s *MarketsService) GetMarkPrices(ctx context.Context, params *GetMarkPricesParams) ([]types.MarkPrice, error) {
 	var result []types.MarkPrice
-	if err := s.client.Get(ctx, "api/v1/markPrices", nil, &result); err != nil {
+	queryParams := make(map[string]string)
+	if params != nil {
+		if params.Symbol != "" {
+			queryParams["symbol"] = params.Symbol
+		}
+		if params.MarketType != "" {
+			queryParams["marketType"] = string(params.MarketType)
+		}
+	}
+	if err := s.client.Get(ctx, "api/v1/markPrices", queryParams, &result); err != nil {
 		return nil, err
 	}
 	return result, nil
 }
 
-// GetOpenInterest retrieves open interest for a perpetual market.
-func (s *MarketsService) GetOpenInterest(ctx context.Context, symbol string) (*types.OpenInterest, error) {
-	var result []types.OpenInterest
-	params := map[string]string{"symbol": symbol}
-	if err := s.client.Get(ctx, "api/v1/openInterest", params, &result); err != nil {
-		return nil, err
-	}
-	if len(result) == 0 {
-		return nil, fmt.Errorf("open interest not found for symbol: %s", symbol)
-	}
-	return &result[0], nil
+// GetOpenInterestParams represents parameters for getting open interest.
+type GetOpenInterestParams struct {
+	Symbol string // Optional
 }
 
-// GetFundingRates retrieves funding rate information.
-func (s *MarketsService) GetFundingRates(ctx context.Context, symbol string) ([]types.FundingRate, error) {
+// GetOpenInterest retrieves open interest for perpetual markets.
+func (s *MarketsService) GetOpenInterest(ctx context.Context, params *GetOpenInterestParams) ([]types.OpenInterest, error) {
+	var result []types.OpenInterest
+	queryParams := make(map[string]string)
+	if params != nil && params.Symbol != "" {
+		queryParams["symbol"] = params.Symbol
+	}
+	if err := s.client.Get(ctx, "api/v1/openInterest", queryParams, &result); err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+// GetFundingRatesParams represents parameters for getting funding rates.
+type GetFundingRatesParams struct {
+	Symbol string // Required
+	Limit  int    // Optional: default 100, max 10000
+	Offset int    // Optional: default 0
+}
+
+// GetFundingRates retrieves funding rate history.
+func (s *MarketsService) GetFundingRates(ctx context.Context, params GetFundingRatesParams) ([]types.FundingRate, error) {
 	var result []types.FundingRate
-	params := map[string]string{"symbol": symbol}
-	if err := s.client.Get(ctx, "api/v1/fundingRates", params, &result); err != nil {
+	queryParams := map[string]string{"symbol": params.Symbol}
+	if params.Limit > 0 {
+		queryParams["limit"] = strconv.Itoa(params.Limit)
+	}
+	if params.Offset > 0 {
+		queryParams["offset"] = strconv.Itoa(params.Offset)
+	}
+	if err := s.client.Get(ctx, "api/v1/fundingRates", queryParams, &result); err != nil {
 		return nil, err
 	}
 	return result, nil

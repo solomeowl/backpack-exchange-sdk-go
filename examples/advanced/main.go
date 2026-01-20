@@ -177,7 +177,7 @@ func paginationExample(ctx context.Context, client *backpack.Client) {
 
 func positionsExample(ctx context.Context, client *backpack.Client) {
 	// Get all positions
-	positions, err := client.Positions.GetPositions(ctx)
+	positions, err := client.Positions.GetPositions(ctx, nil)
 	if err != nil {
 		log.Printf("Error getting positions: %v", err)
 		return
@@ -190,12 +190,11 @@ func positionsExample(ctx context.Context, client *backpack.Client) {
 
 	for _, pos := range positions {
 		fmt.Printf("Position: %s\n", pos.Symbol)
-		fmt.Printf("  Side: %s\n", pos.Side)
-		fmt.Printf("  Size: %s\n", pos.Quantity)
+		fmt.Printf("  Net Quantity: %s\n", pos.NetQuantity)
 		fmt.Printf("  Entry Price: %s\n", pos.EntryPrice)
 		fmt.Printf("  Mark Price: %s\n", pos.MarkPrice)
-		fmt.Printf("  Unrealized PnL: %s\n", pos.UnrealizedPnl)
-		fmt.Printf("  Liquidation Price: %s\n", pos.LiquidationPrice)
+		fmt.Printf("  Unrealized PnL: %s\n", pos.PnlUnrealized)
+		fmt.Printf("  Est. Liquidation Price: %s\n", pos.EstLiquidationPrice)
 	}
 }
 
@@ -214,7 +213,7 @@ func borrowLendExample(ctx context.Context, client *backpack.Client) {
 			break
 		}
 		fmt.Printf("  %s: Borrow Rate=%s, Lend Rate=%s\n",
-			market.Symbol, market.BorrowRate, market.LendRate)
+			market.Symbol, market.BorrowInterestRate, market.LendInterestRate)
 	}
 
 	// Get borrow/lend positions (authenticated)
@@ -229,8 +228,8 @@ func borrowLendExample(ctx context.Context, client *backpack.Client) {
 	} else {
 		fmt.Println("\nBorrow/Lend Positions:")
 		for _, pos := range positions {
-			fmt.Printf("  %s: %s %s (Interest: %s)\n",
-				pos.Symbol, pos.Side, pos.Quantity, pos.AccruedInterest)
+			fmt.Printf("  %s: Net Qty=%s, Mark Price=%s (Interest: %s)\n",
+				pos.Symbol, pos.NetQuantity, pos.MarkPrice, pos.CumulativeInterest)
 		}
 	}
 
@@ -246,6 +245,6 @@ func borrowLendExample(ctx context.Context, client *backpack.Client) {
 
 	fmt.Println("\nUSDC Borrow/Lend Rate History:")
 	for _, h := range history {
-		fmt.Printf("  Borrow: %s, Lend: %s\n", h.BorrowRate, h.LendRate)
+		fmt.Printf("  Borrow: %s, Lend: %s\n", h.BorrowInterestRate, h.LendInterestRate)
 	}
 }

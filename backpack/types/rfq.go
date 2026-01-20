@@ -2,77 +2,109 @@ package types
 
 import "github.com/solomeowl/backpack-exchange-sdk-go/backpack/enums"
 
-// RFQ represents a Request for Quote.
+// RFQ represents a Request for Quote (live, from GET /api/v1/rfq).
 type RFQ struct {
-	ID          string          `json:"id"`
-	Symbol      string          `json:"symbol"`
-	Side        enums.Side      `json:"side"`
-	Quantity    string          `json:"quantity"`
-	Status      enums.RFQStatus `json:"status"`
-	ExpiresAt   int64           `json:"expiresAt,omitempty"`
-	CreatedAt   int64           `json:"createdAt,omitempty"`
+	RfqID          string               `json:"rfqId"`
+	Symbol         string               `json:"symbol"`
+	Side           enums.Side           `json:"side"`
+	SubmissionTime string               `json:"submissionTime"`
+	ExpiryTime     string               `json:"expiryTime"`
+	Status         enums.RFQStatus      `json:"status"`
+	ExecutionMode  enums.RfqExecutionMode `json:"executionMode"`
+	CreatedAt      string               `json:"createdAt"`
+	ClientID       *uint32              `json:"clientId,omitempty"`
+	Price          string               `json:"price,omitempty"`
+	Quantity       string               `json:"quantity,omitempty"`
+	QuoteQuantity  string               `json:"quoteQuantity,omitempty"`
 }
 
-// RFQSubmitParams represents parameters for submitting an RFQ.
+// RFQSubmitParams represents parameters for submitting an RFQ (POST /api/v1/rfq).
 type RFQSubmitParams struct {
-	Symbol   string     `json:"symbol"`
-	Side     enums.Side `json:"side"`
-	Quantity string     `json:"quantity"`
+	Symbol         string                `json:"symbol"`
+	Side           enums.Side            `json:"side"`
+	ClientID       *uint32               `json:"clientId,omitempty"`
+	Quantity       string                `json:"quantity,omitempty"`
+	QuoteQuantity  string                `json:"quoteQuantity,omitempty"`
+	Price          string                `json:"price,omitempty"`
+	ExecutionMode  enums.RfqExecutionMode `json:"executionMode,omitempty"`
+	AutoLend       *bool                 `json:"autoLend,omitempty"`
+	AutoLendRedeem *bool                 `json:"autoLendRedeem,omitempty"`
+	AutoBorrow     *bool                 `json:"autoBorrow,omitempty"`
+	AutoBorrowRepay *bool                `json:"autoBorrowRepay,omitempty"`
 }
 
-// Quote represents a quote response.
+// Quote represents a quote response (live, from GET /api/v1/rfq/quote).
 type Quote struct {
-	ID        string            `json:"id"`
-	RFQID     string            `json:"rfqId"`
-	Price     string            `json:"price"`
-	Quantity  string            `json:"quantity"`
-	Side      enums.Side        `json:"side"`
+	QuoteID   string            `json:"quoteId"`
+	RfqID     string            `json:"rfqId"`
+	BidPrice  string            `json:"bidPrice"`
+	AskPrice  string            `json:"askPrice"`
 	Status    enums.QuoteStatus `json:"status"`
-	ExpiresAt int64             `json:"expiresAt,omitempty"`
-	CreatedAt int64             `json:"createdAt,omitempty"`
+	CreatedAt string            `json:"createdAt"`
+	ClientID  *uint32           `json:"clientId,omitempty"`
 }
 
-// QuoteSubmitParams represents parameters for submitting a quote.
+// QuoteSubmitParams represents parameters for submitting a quote (POST /api/v1/rfq/quote).
 type QuoteSubmitParams struct {
-	RFQID    string `json:"rfqId"`
-	Price    string `json:"price"`
-	Quantity string `json:"quantity,omitempty"`
+	RfqID    string  `json:"rfqId"`
+	BidPrice string  `json:"bidPrice"`
+	AskPrice string  `json:"askPrice"`
+	ClientID *uint32 `json:"clientId,omitempty"`
 }
 
-// RFQHistoryItem represents an RFQ history record.
+// RFQHistoryItem represents an RFQ history record (RequestForQuoteHistorical).
 type RFQHistoryItem struct {
-	RFQ
-	Quotes []Quote `json:"quotes,omitempty"`
+	RfqID          string               `json:"rfqId"`
+	Symbol         string               `json:"symbol"`
+	Side           enums.Side           `json:"side"`
+	SubmissionTime string               `json:"submissionTime"`
+	ExpiryTime     string               `json:"expiryTime"`
+	Status         enums.RFQStatus      `json:"status"`
+	ExecutionMode  enums.RfqExecutionMode `json:"executionMode"`
+	CreatedAt      string               `json:"createdAt"`
+	ClientID       *uint32              `json:"clientId,omitempty"`
+	Price          string               `json:"price,omitempty"`
+	Quantity       string               `json:"quantity,omitempty"`
+	QuoteQuantity  string               `json:"quoteQuantity,omitempty"`
 }
 
-// QuoteHistoryItem represents a quote history record.
+// QuoteHistoryItem represents a quote history record (QuoteHistorical).
 type QuoteHistoryItem struct {
-	Quote
-	RFQ *RFQ `json:"rfq,omitempty"`
+	RfqID     string            `json:"rfqId"`
+	QuoteID   string            `json:"quoteId"`
+	BidPrice  string            `json:"bidPrice"`
+	AskPrice  string            `json:"askPrice"`
+	Status    enums.QuoteStatus `json:"status"`
+	CreatedAt string            `json:"createdAt"`
+	ClientID  *uint32           `json:"clientId,omitempty"`
 }
 
-// RFQFillHistoryItem represents an RFQ fill history record.
+// RFQFillHistoryItem represents an RFQ fill history record (RequestForQuoteFillHistorical).
 type RFQFillHistoryItem struct {
-	RFQID      string     `json:"rfqId"`
-	QuoteID    string     `json:"quoteId"`
-	Symbol     string     `json:"symbol"`
-	Side       enums.Side `json:"side"`
-	Price      string     `json:"price"`
-	Quantity   string     `json:"quantity"`
-	Fee        string     `json:"fee,omitempty"`
-	FeeSymbol  string     `json:"feeSymbol,omitempty"`
-	Timestamp  int64      `json:"timestamp"`
+	RfqID           string               `json:"rfqId"`
+	QuoteID         string               `json:"quoteId"`
+	Symbol          string               `json:"symbol"`
+	Side            enums.Side           `json:"side"`
+	FillPrice       string               `json:"fillPrice"`
+	CreatedAt       string               `json:"createdAt"`
+	FilledAt        string               `json:"filledAt"`
+	ClientID        *uint32              `json:"clientId,omitempty"`
+	Quantity        string               `json:"quantity,omitempty"`
+	QuoteQuantity   string               `json:"quoteQuantity,omitempty"`
+	SystemOrderType enums.SystemOrderType `json:"systemOrderType,omitempty"`
 }
 
-// QuoteFillHistoryItem represents a quote fill history record.
+// QuoteFillHistoryItem represents a quote fill history record (QuoteFillHistorical).
 type QuoteFillHistoryItem struct {
-	QuoteID   string     `json:"quoteId"`
-	RFQID     string     `json:"rfqId"`
-	Symbol    string     `json:"symbol"`
-	Side      enums.Side `json:"side"`
-	Price     string     `json:"price"`
-	Quantity  string     `json:"quantity"`
-	Fee       string     `json:"fee,omitempty"`
-	FeeSymbol string     `json:"feeSymbol,omitempty"`
-	Timestamp int64      `json:"timestamp"`
+	QuoteID   string            `json:"quoteId"`
+	RfqID     string            `json:"rfqId"`
+	Symbol    string            `json:"symbol"`
+	Side      enums.Side        `json:"side"`
+	Quantity  string            `json:"quantity"`
+	FillPrice string            `json:"fillPrice"`
+	Fee       string            `json:"fee"`
+	FeeSymbol string            `json:"feeSymbol"`
+	CreatedAt string            `json:"createdAt"`
+	FilledAt  string            `json:"filledAt"`
+	ClientID  *uint32           `json:"clientId,omitempty"`
 }

@@ -26,7 +26,7 @@ func (s *OrdersService) GetOrder(ctx context.Context, params types.GetOrderParam
 		queryParams["orderId"] = params.OrderID
 	}
 	if params.ClientID != nil {
-		queryParams["clientId"] = strconv.FormatInt(*params.ClientID, 10)
+		queryParams["clientId"] = strconv.FormatUint(uint64(*params.ClientID), 10)
 	}
 	if err := s.client.GetAuthenticated(ctx, "api/v1/order", queryParams, "orderQuery", &result); err != nil {
 		return nil, err

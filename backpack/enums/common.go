@@ -13,16 +13,42 @@ const (
 type Blockchain string
 
 const (
-	BlockchainSolana   Blockchain = "Solana"
-	BlockchainEthereum Blockchain = "Ethereum"
-	BlockchainPolygon  Blockchain = "Polygon"
-	BlockchainBitcoin  Blockchain = "Bitcoin"
+	Blockchain0G          Blockchain = "0G"
+	BlockchainAptos       Blockchain = "Aptos"
+	BlockchainArbitrum    Blockchain = "Arbitrum"
+	BlockchainAvalanche   Blockchain = "Avalanche"
+	BlockchainBase        Blockchain = "Base"
+	BlockchainBerachain   Blockchain = "Berachain"
+	BlockchainBitcoin     Blockchain = "Bitcoin"
+	BlockchainBitcoinCash Blockchain = "BitcoinCash"
+	BlockchainBsc         Blockchain = "Bsc"
+	BlockchainCardano     Blockchain = "Cardano"
+	BlockchainDogecoin    Blockchain = "Dogecoin"
+	BlockchainEclipse     Blockchain = "Eclipse"
+	BlockchainEthereum    Blockchain = "Ethereum"
+	BlockchainFogo        Blockchain = "Fogo"
+	BlockchainHyperEVM    Blockchain = "HyperEVM"
+	BlockchainHyperliquid Blockchain = "Hyperliquid"
+	BlockchainLinea       Blockchain = "Linea"
+	BlockchainLitecoin    Blockchain = "Litecoin"
+	BlockchainMonad       Blockchain = "Monad"
+	BlockchainNear        Blockchain = "Near"
+	BlockchainOptimism    Blockchain = "Optimism"
+	BlockchainPlasma      Blockchain = "Plasma"
+	BlockchainPolygon     Blockchain = "Polygon"
+	BlockchainSei         Blockchain = "Sei"
+	BlockchainSolana      Blockchain = "Solana"
+	BlockchainStory       Blockchain = "Story"
+	BlockchainSui         Blockchain = "Sui"
+	BlockchainTron        Blockchain = "Tron"
+	BlockchainXRP         Blockchain = "XRP"
+	BlockchainZcash       Blockchain = "Zcash"
 )
 
 // SortDirection represents sort order.
 type SortDirection string
 
 const (
-	SortAsc  SortDirection = "ASC"
-	SortDesc SortDirection = "DESC"
+	SortDirectionAsc  SortDirection = "Asc"
+	SortDirectionDesc SortDirection = "Desc"
 )

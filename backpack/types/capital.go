@@ -12,60 +12,83 @@ type Balance struct {
 // Balances represents all account balances as a map of symbol to balance.
 type Balances map[string]Balance
 
-// CollateralResponse represents the collateral API response.
-type CollateralResponse struct {
-	AssetsValue      string           `json:"assetsValue"`
-	BorrowLiability  string           `json:"borrowLiability"`
-	Collateral       []CollateralItem `json:"collateral"`
+// MarginAccountSummary represents the collateral API response from GET /api/v1/capital/collateral.
+type MarginAccountSummary struct {
+	AssetsValue        string           `json:"assetsValue"`
+	BorrowLiability    string           `json:"borrowLiability"`
+	Collateral         []CollateralItem `json:"collateral"`
+	IMF                string           `json:"imf"`
+	UnsettledEquity    string           `json:"unsettledEquity"`
+	LiabilitiesValue   string           `json:"liabilitiesValue"`
+	MarginFraction     string           `json:"marginFraction,omitempty"`
+	MMF                string           `json:"mmf"`
+	NetEquity          string           `json:"netEquity"`
+	NetEquityAvailable string           `json:"netEquityAvailable"`
+	NetEquityLocked    string           `json:"netEquityLocked"`
+	NetExposureFutures string           `json:"netExposureFutures"`
+	PnlUnrealized      string           `json:"pnlUnrealized"`
 }
 
 // CollateralItem represents a single collateral item.
 type CollateralItem struct {
 	Symbol            string `json:"symbol"`
 	AssetMarkPrice    string `json:"assetMarkPrice"`
-	AvailableQuantity string `json:"availableQuantity"`
-	BalanceNotional   string `json:"balanceNotional"`
-	CollateralValue   string `json:"collateralValue"`
-	CollateralWeight  string `json:"collateralWeight"`
-	LendQuantity      string `json:"lendQuantity"`
-	OpenOrderQuantity string `json:"openOrderQuantity"`
 	TotalQuantity     string `json:"totalQuantity"`
+	BalanceNotional   string `json:"balanceNotional"`
+	CollateralWeight  string `json:"collateralWeight"`
+	CollateralValue   string `json:"collateralValue"`
+	OpenOrderQuantity string `json:"openOrderQuantity"`
+	LendQuantity      string `json:"lendQuantity"`
+	AvailableQuantity string `json:"availableQuantity"`
 }
 
-// Deposit represents a deposit record.
+// Deposit represents a deposit record from GET /wapi/v1/capital/deposits.
 type Deposit struct {
-	ID              int64               `json:"id"`
-	Symbol          string              `json:"symbol"`
-	Quantity        string              `json:"quantity"`
-	Status          enums.DepositStatus `json:"status"`
-	Blockchain      enums.Blockchain    `json:"blockchain"`
-	TransactionHash string              `json:"transactionHash,omitempty"`
-	FromAddress     string              `json:"fromAddress,omitempty"`
-	Confirmations   int                 `json:"confirmations,omitempty"`
-	CreatedAt       string              `json:"createdAt,omitempty"`
+	ID              int32                `json:"id"`
+	ToAddress       string               `json:"toAddress,omitempty"`
+	FromAddress     string               `json:"fromAddress,omitempty"`
+	Source          enums.DepositSource  `json:"source"`
+	Status          enums.DepositStatus  `json:"status"`
+	TransactionHash string               `json:"transactionHash,omitempty"`
+	Symbol          string               `json:"symbol"`
+	Quantity        string               `json:"quantity"`
+	CreatedAt       string               `json:"createdAt"`
+	FiatAmount      float64              `json:"fiatAmount,omitempty"`
+	FiatCurrency    string               `json:"fiatCurrency,omitempty"`
+	InstitutionBic  string               `json:"institutionBic,omitempty"`
+	PlatformMemo    string               `json:"platformMemo,omitempty"`
 }
 
-// DepositAddress represents a deposit address.
+// DepositAddress represents a deposit address from GET /wapi/v1/capital/deposit/address.
 type DepositAddress struct {
-	Address    string           `json:"address"`
-	Blockchain enums.Blockchain `json:"blockchain"`
-	Tag        string           `json:"tag,omitempty"`
+	Address string `json:"address"`
 }
 
-// Withdrawal represents a withdrawal record.
+// Withdrawal represents a withdrawal record from GET /wapi/v1/capital/withdrawals.
 type Withdrawal struct {
-	ID              int64                  `json:"id"`
-	Symbol          string                 `json:"symbol"`
-	Quantity        string                 `json:"quantity"`
-	Fee             string                 `json:"fee,omitempty"`
-	Status          enums.WithdrawalStatus `json:"status"`
-	Blockchain      enums.Blockchain       `json:"blockchain"`
-	ToAddress       string                 `json:"toAddress"`
-	TransactionHash string                 `json:"transactionHash,omitempty"`
-	CreatedAt       string                 `json:"createdAt,omitempty"`
+	ID                int32                           `json:"id"`
+	Blockchain        enums.Blockchain                `json:"blockchain"`
+	ClientID          string                          `json:"clientId,omitempty"`
+	Identifier        string                          `json:"identifier,omitempty"`
+	Quantity          string                          `json:"quantity"`
+	Fee               string                          `json:"fee"`
+	FiatFee           string                          `json:"fiatFee,omitempty"`
+	FiatState         enums.EqualsMoneyWithdrawalState `json:"fiatState,omitempty"`
+	FiatSymbol        string                          `json:"fiatSymbol,omitempty"`
+	ProviderID        string                          `json:"providerId,omitempty"`
+	Symbol            string                          `json:"symbol"`
+	Status            enums.WithdrawalStatus          `json:"status"`
+	SubaccountID      uint16                          `json:"subaccountId,omitempty"`
+	ToAddress         string                          `json:"toAddress"`
+	TransactionHash   string                          `json:"transactionHash,omitempty"`
+	CreatedAt         string                          `json:"createdAt"`
+	IsInternal        bool                            `json:"isInternal"`
+	BankName          string                          `json:"bankName,omitempty"`
+	BankIdentifier    string                          `json:"bankIdentifier,omitempty"`
+	AccountIdentifier string                          `json:"accountIdentifier,omitempty"`
 }
 
-// WithdrawalRequest represents a withdrawal request.
+// WithdrawalRequest represents a withdrawal request for POST /wapi/v1/capital/withdrawals.
 type WithdrawalRequest struct {
 	Symbol        string           `json:"symbol"`
 	Blockchain    enums.Blockchain `json:"blockchain"`
@@ -75,17 +98,18 @@ type WithdrawalRequest struct {
 	ClientID      string           `json:"clientId,omitempty"`
 }
 
-// WithdrawalDelay represents withdrawal delay settings.
+// WithdrawalDelay represents withdrawal delay settings from /wapi/v1/capital/withdrawals/delay.
 type WithdrawalDelay struct {
-	Enabled         bool   `json:"enabled"`
-	DelayHours      int    `json:"delayHours,omitempty"`
-	AddressWhitelist []string `json:"addressWhitelist,omitempty"`
+	CurrentWithdrawalDelayHours         int32  `json:"currentWithdrawalDelayHours,omitempty"`
+	PendingWithdrawalDelayHours         int32  `json:"pendingWithdrawalDelayHours,omitempty"`
+	PendingWithdrawalDelayHoursEnabledAt string `json:"pendingWithdrawalDelayHoursEnabledAt,omitempty"`
 }
 
-// DustConversion represents dust conversion result.
+// DustConversion represents dust conversion result from history API.
 type DustConversion struct {
-	ConvertedSymbol string `json:"convertedSymbol"`
-	ConvertedAmount string `json:"convertedAmount"`
-	ReceivedSymbol  string `json:"receivedSymbol"`
-	ReceivedAmount  string `json:"receivedAmount"`
+	ID           uint64 `json:"id"`
+	Quantity     string `json:"quantity"`
+	Symbol       string `json:"symbol"`
+	USDCReceived string `json:"usdcReceived"`
+	Timestamp    string `json:"timestamp"`
 }

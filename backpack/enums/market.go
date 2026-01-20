@@ -4,8 +4,12 @@ package enums
 type MarketType string
 
 const (
-	MarketTypeSpot MarketType = "SPOT"
-	MarketTypePerp MarketType = "PERP"
+	MarketTypeSpot       MarketType = "SPOT"
+	MarketTypePerp       MarketType = "PERP"
+	MarketTypeIPerp      MarketType = "IPERP"
+	MarketTypeDated      MarketType = "DATED"
+	MarketTypePrediction MarketType = "PREDICTION"
+	MarketTypeRFQ        MarketType = "RFQ"
 )
 
 // KlineInterval represents kline/candlestick intervals.
@@ -33,19 +37,39 @@ const (
 type TickerInterval string
 
 const (
-	TickerInterval1h  TickerInterval = "1h"
-	TickerInterval4h  TickerInterval = "4h"
-	TickerInterval24h TickerInterval = "24h"
+	TickerInterval1d TickerInterval = "1d"
+	TickerInterval1w TickerInterval = "1w"
 )
 
-// DepthLimit represents order book depth limits.
-type DepthLimit int
+// DepthLimit represents order book depth limits (as string values).
+type DepthLimit string
 
 const (
-	DepthLimit5   DepthLimit = 5
-	DepthLimit10  DepthLimit = 10
-	DepthLimit20  DepthLimit = 20
-	DepthLimit50  DepthLimit = 50
-	DepthLimit100 DepthLimit = 100
-	DepthLimit500 DepthLimit = 500
+	DepthLimit5    DepthLimit = "5"
+	DepthLimit10   DepthLimit = "10"
+	DepthLimit20   DepthLimit = "20"
+	DepthLimit50   DepthLimit = "50"
+	DepthLimit100  DepthLimit = "100"
+	DepthLimit500  DepthLimit = "500"
+	DepthLimit1000 DepthLimit = "1000"
+)
+
+// KlinePriceType represents kline price types.
+type KlinePriceType string
+
+const (
+	KlinePriceTypeLast  KlinePriceType = "Last"
+	KlinePriceTypeIndex KlinePriceType = "Index"
+	KlinePriceTypeMark  KlinePriceType = "Mark"
+)
+
+// OrderBookState represents the state of an order book.
+type OrderBookState string
+
+const (
+	OrderBookStateOpen       OrderBookState = "Open"
+	OrderBookStateClosed     OrderBookState = "Closed"
+	OrderBookStateCancelOnly OrderBookState = "CancelOnly"
+	OrderBookStateLimitOnly  OrderBookState = "LimitOnly"
+	OrderBookStatePostOnly   OrderBookState = "PostOnly"
 )

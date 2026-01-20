@@ -1,29 +1,56 @@
 package types
 
-// Asset represents an asset/token.
+import "github.com/solomeowl/backpack-exchange-sdk-go/backpack/enums"
+
+// Asset represents a market asset from GET /api/v1/assets.
 type Asset struct {
-	Symbol      string        `json:"symbol"`
-	Name        string        `json:"name,omitempty"`
-	Decimals    int           `json:"decimals"`
-	TokenMint   string        `json:"tokenMint,omitempty"`
-	Blockchains []AssetChain  `json:"blockchains,omitempty"`
+	Symbol      string  `json:"symbol"`
+	DisplayName string  `json:"displayName"`
+	CoingeckoID string  `json:"coingeckoId,omitempty"`
+	Tokens      []Token `json:"tokens"`
 }
 
-// AssetChain represents blockchain-specific asset information.
-type AssetChain struct {
-	Blockchain        string `json:"blockchain"`
-	DepositEnabled    bool   `json:"depositEnabled"`
-	WithdrawEnabled   bool   `json:"withdrawEnabled"`
-	MinWithdraw       string `json:"minWithdraw,omitempty"`
-	WithdrawFee       string `json:"withdrawFee,omitempty"`
-	ContractAddress   string `json:"contractAddress,omitempty"`
-	Confirmations     int    `json:"confirmations,omitempty"`
+// Token represents blockchain-specific token information.
+type Token struct {
+	DisplayName       string           `json:"displayName"`
+	Blockchain        enums.Blockchain `json:"blockchain"`
+	ContractAddress   string           `json:"contractAddress,omitempty"`
+	DepositEnabled    bool             `json:"depositEnabled"`
+	MinimumDeposit    string           `json:"minimumDeposit"`
+	WithdrawEnabled   bool             `json:"withdrawEnabled"`
+	MinimumWithdrawal string           `json:"minimumWithdrawal"`
+	MaximumWithdrawal string           `json:"maximumWithdrawal,omitempty"`
+	WithdrawalFee     string           `json:"withdrawalFee"`
 }
 
-// CollateralInfo represents collateral information for an asset.
+// CollateralInfo represents collateral parameters from GET /api/v1/collateral.
 type CollateralInfo struct {
-	Symbol           string `json:"symbol"`
-	InitialWeight    string `json:"initialWeight"`
-	MaintenanceWeight string `json:"maintenanceWeight"`
-	MaxQuantity      string `json:"maxQuantity,omitempty"`
+	Symbol          string             `json:"symbol"`
+	ImfFunction     PositionImfFunction `json:"imfFunction"`
+	MmfFunction     PositionImfFunction `json:"mmfFunction"`
+	HaircutFunction CollateralFunction  `json:"haircutFunction"`
+}
+
+// PositionImfFunction represents the IMF/MMF function configuration.
+type PositionImfFunction struct {
+	Type   string `json:"type"`
+	A      string `json:"a,omitempty"`
+	B      string `json:"b,omitempty"`
+	C      string `json:"c,omitempty"`
+	Floor  string `json:"floor,omitempty"`
+}
+
+// CollateralFunction represents the collateral haircut function.
+type CollateralFunction struct {
+	Weight string                 `json:"weight"`
+	Kind   CollateralFunctionKind `json:"kind"`
+}
+
+// CollateralFunctionKind represents the kind of collateral function.
+type CollateralFunctionKind struct {
+	Type   string `json:"type"`
+	A      string `json:"a,omitempty"`
+	B      string `json:"b,omitempty"`
+	C      string `json:"c,omitempty"`
+	Floor  string `json:"floor,omitempty"`
 }

@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 
+	"github.com/solomeowl/backpack-exchange-sdk-go/backpack/enums"
 	"github.com/solomeowl/backpack-exchange-sdk-go/backpack/types"
 )
 
@@ -16,21 +17,26 @@ func NewPositionsService(client HTTPClient) *PositionsService {
 	return &PositionsService{client: client}
 }
 
-// GetPositions retrieves all futures positions.
-func (s *PositionsService) GetPositions(ctx context.Context) ([]types.Position, error) {
+// GetPositionsParams represents parameters for getting positions.
+type GetPositionsParams struct {
+	Symbol     string           // Optional: filter for a single position by symbol
+	MarketType enums.MarketType // Optional: SPOT or PERP
+}
+
+// GetPositions retrieves futures positions.
+func (s *PositionsService) GetPositions(ctx context.Context, params *GetPositionsParams) ([]types.Position, error) {
 	var result []types.Position
-	if err := s.client.GetAuthenticated(ctx, "api/v1/position", nil, "positionQuery", &result); err != nil {
+	queryParams := make(map[string]string)
+	if params != nil {
+		if params.Symbol != "" {
+			queryParams["symbol"] = params.Symbol
+		}
+		if params.MarketType != "" {
+			queryParams["marketType"] = string(params.MarketType)
+		}
+	}
+	if err := s.client.GetAuthenticated(ctx, "api/v1/position", queryParams, "positionQuery", &result); err != nil {
 		return nil, err
 	}
 	return result, nil
-}
-
-// GetPosition retrieves a specific position by symbol.
-func (s *PositionsService) GetPosition(ctx context.Context, symbol string) (*types.Position, error) {
-	var result types.Position
-	params := map[string]string{"symbol": symbol}
-	if err := s.client.GetAuthenticated(ctx, "api/v1/position", params, "positionQuery", &result); err != nil {
-		return nil, err
-	}
-	return &result, nil
 }

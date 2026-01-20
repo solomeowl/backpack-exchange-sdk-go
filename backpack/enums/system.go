@@ -4,6 +4,6 @@ package enums
 type SystemStatus string
 
 const (
-	SystemStatusNormal      SystemStatus = "Normal"
+	SystemStatusOk          SystemStatus = "Ok"
 	SystemStatusMaintenance SystemStatus = "Maintenance"
 )

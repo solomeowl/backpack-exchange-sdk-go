@@ -20,9 +20,35 @@ func NewRFQService(client HTTPClient) *RFQService {
 func (s *RFQService) SubmitRFQ(ctx context.Context, params types.RFQSubmitParams) (*types.RFQ, error) {
 	var result types.RFQ
 	body := map[string]any{
-		"symbol":   params.Symbol,
-		"side":     string(params.Side),
-		"quantity": params.Quantity,
+		"symbol": params.Symbol,
+		"side":   string(params.Side),
+	}
+	if params.ClientID != nil {
+		body["clientId"] = *params.ClientID
+	}
+	if params.Quantity != "" {
+		body["quantity"] = params.Quantity
+	}
+	if params.QuoteQuantity != "" {
+		body["quoteQuantity"] = params.QuoteQuantity
+	}
+	if params.Price != "" {
+		body["price"] = params.Price
+	}
+	if params.ExecutionMode != "" {
+		body["executionMode"] = string(params.ExecutionMode)
+	}
+	if params.AutoLend != nil {
+		body["autoLend"] = *params.AutoLend
+	}
+	if params.AutoLendRedeem != nil {
+		body["autoLendRedeem"] = *params.AutoLendRedeem
+	}
+	if params.AutoBorrow != nil {
+		body["autoBorrow"] = *params.AutoBorrow
+	}
+	if params.AutoBorrowRepay != nil {
+		body["autoBorrowRepay"] = *params.AutoBorrowRepay
 	}
 	if err := s.client.PostAuthenticated(ctx, "api/v1/rfq", body, "rfqSubmit", &result); err != nil {
 		return nil, err
@@ -34,11 +60,12 @@ func (s *RFQService) SubmitRFQ(ctx context.Context, params types.RFQSubmitParams
 func (s *RFQService) SubmitQuote(ctx context.Context, params types.QuoteSubmitParams) (*types.Quote, error) {
 	var result types.Quote
 	body := map[string]any{
-		"rfqId": params.RFQID,
-		"price": params.Price,
+		"rfqId":    params.RfqID,
+		"bidPrice": params.BidPrice,
+		"askPrice": params.AskPrice,
 	}
-	if params.Quantity != "" {
-		body["quantity"] = params.Quantity
+	if params.ClientID != nil {
+		body["clientId"] = *params.ClientID
 	}
 	if err := s.client.PostAuthenticated(ctx, "api/v1/rfq/quote", body, "quoteSubmit", &result); err != nil {
 		return nil, err
@@ -47,10 +74,10 @@ func (s *RFQService) SubmitQuote(ctx context.Context, params types.QuoteSubmitPa
 }
 
 // AcceptQuote accepts a quote.
-func (s *RFQService) AcceptQuote(ctx context.Context, quoteID string) (*types.Quote, error) {
-	var result types.Quote
+func (s *RFQService) AcceptQuote(ctx context.Context, quoteID string) (*types.RFQ, error) {
+	var result types.RFQ
 	body := map[string]any{"quoteId": quoteID}
-	if err := s.client.PostAuthenticated(ctx, "api/v1/rfq/quote/accept", body, "quoteAccept", &result); err != nil {
+	if err := s.client.PostAuthenticated(ctx, "api/v1/rfq/accept", body, "quoteAccept", &result); err != nil {
 		return nil, err
 	}
 	return &result, nil
@@ -70,7 +97,7 @@ func (s *RFQService) RefreshRFQ(ctx context.Context, rfqID string) (*types.RFQ, 
 func (s *RFQService) CancelRFQ(ctx context.Context, rfqID string) (*types.RFQ, error) {
 	var result types.RFQ
 	body := map[string]any{"rfqId": rfqID}
-	if err := s.client.DeleteAuthenticated(ctx, "api/v1/rfq", body, "rfqCancel", &result); err != nil {
+	if err := s.client.PostAuthenticated(ctx, "api/v1/rfq/cancel", body, "rfqCancel", &result); err != nil {
 		return nil, err
 	}
 	return &result, nil
