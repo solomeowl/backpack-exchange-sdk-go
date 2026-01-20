@@ -30,7 +30,7 @@ const (
 	KlineInterval1d  KlineInterval = "1d"
 	KlineInterval3d  KlineInterval = "3d"
 	KlineInterval1w  KlineInterval = "1w"
-	KlineInterval1M  KlineInterval = "1M"
+	KlineInterval1Month KlineInterval = "1month"
 )
 
 // TickerInterval represents ticker update intervals.

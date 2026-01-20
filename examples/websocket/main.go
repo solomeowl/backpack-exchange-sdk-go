@@ -38,7 +38,7 @@ func main() {
 	fmt.Println("Subscribing to SOL_USDC trades...")
 	err = handler.OnTrade("SOL_USDC", func(trade *types.WSTrade) {
 		side := "Buy"
-		if trade.BuyerMaker {
+		if trade.IsBuyerMaker {
 			side = "Sell"
 		}
 		fmt.Printf("[Trade] %s: %s @ %s\n", side, trade.Quantity, trade.Price)
@@ -50,8 +50,8 @@ func main() {
 	// Subscribe to ticker updates
 	fmt.Println("Subscribing to SOL_USDC ticker...")
 	err = handler.OnTicker("SOL_USDC", func(ticker *types.WSTicker) {
-		fmt.Printf("[Ticker] Price: %s, Change: %s%%\n",
-			ticker.LastPrice, ticker.PriceChangePercent)
+		fmt.Printf("[Ticker] Open: %s, Close: %s, Volume: %s\n",
+			ticker.Open, ticker.Close, ticker.Volume)
 	})
 	if err != nil {
 		log.Printf("Error subscribing to ticker: %v", err)
@@ -97,7 +97,7 @@ func main() {
 				authHandler := websocket.NewHandler(authWsClient)
 
 				// Subscribe to order updates
-				err = authHandler.OnOrderUpdate(func(order *types.WSOrderUpdate) {
+				err = authHandler.OnOrderUpdate("", func(order *types.WSOrderUpdate) {
 					fmt.Printf("[Order Update] %s: %s %s @ %s (%s)\n",
 						order.Symbol, order.Side, order.Quantity, order.Price, order.Status)
 				})
@@ -106,9 +106,9 @@ func main() {
 				}
 
 				// Subscribe to position updates
-				err = authHandler.OnPositionUpdate(func(pos *types.WSPositionUpdate) {
+				err = authHandler.OnPositionUpdate("", func(pos *types.WSPositionUpdate) {
 					fmt.Printf("[Position Update] %s: %s @ %s, PnL: %s\n",
-						pos.Symbol, pos.Quantity, pos.EntryPrice, pos.UnrealizedPnl)
+						pos.Symbol, pos.NetQuantity, pos.EntryPrice, pos.PnlUnrealized)
 				})
 				if err != nil {
 					log.Printf("Error subscribing to position updates: %v", err)

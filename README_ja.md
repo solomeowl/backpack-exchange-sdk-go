@@ -35,6 +35,7 @@ import (
     "log"
 
     "github.com/solomeowl/backpack-exchange-sdk-go/backpack"
+    "github.com/solomeowl/backpack-exchange-sdk-go/backpack/services"
 )
 
 func main() {
@@ -46,13 +47,13 @@ func main() {
     ctx := context.Background()
 
     // 全マーケット取得
-    markets, _ := client.Markets.GetMarkets(ctx)
+    markets, _ := client.Markets.GetMarkets(ctx, nil)
 
     // ティッカー取得
-    ticker, _ := client.Markets.GetTicker(ctx, "SOL_USDC")
+    ticker, _ := client.Markets.GetTicker(ctx, services.GetTickerParams{Symbol: "SOL_USDC"})
 
     // オーダーブック深度取得
-    depth, _ := client.Markets.GetDepth(ctx, "SOL_USDC")
+    depth, _ := client.Markets.GetDepth(ctx, services.GetDepthParams{Symbol: "SOL_USDC"})
 
     fmt.Printf("マーケット数: %d, 最終価格: %s, 買い板深度: %d\n",
         len(markets), ticker.LastPrice, len(depth.Bids))
@@ -97,7 +98,7 @@ func main() {
     })
 
     // 注文履歴取得
-    history, _ := client.History.GetOrderHistory(ctx, &types.HistoryParams{
+    history, _ := client.History.GetOrderHistory(ctx, &types.OrderHistoryParams{
         Symbol: "SOL_USDC",
     })
 
@@ -150,11 +151,11 @@ func main() {
 | | `System.GetWallets(ctx)` | 対応ウォレット取得 |
 | **資産** | `Assets.GetAssets(ctx)` | 全資産取得 |
 | | `Assets.GetCollateral(ctx)` | 担保情報取得 |
-| **マーケット** | `Markets.GetMarkets(ctx)` | 全マーケット取得 |
+| **マーケット** | `Markets.GetMarkets(ctx, params)` | 全マーケット取得 |
 | | `Markets.GetMarket(ctx, symbol)` | 特定マーケット取得 |
-| | `Markets.GetTicker(ctx, symbol)` | ティッカー取得 |
-| | `Markets.GetTickers(ctx)` | 全ティッカー取得 |
-| | `Markets.GetDepth(ctx, symbol)` | オーダーブック取得 |
+| | `Markets.GetTicker(ctx, params)` | ティッカー取得 |
+| | `Markets.GetTickers(ctx, params)` | 全ティッカー取得 |
+| | `Markets.GetDepth(ctx, params)` | オーダーブック取得 |
 | | `Markets.GetKlines(ctx, params)` | ローソク足取得 |
 | | `Markets.GetMarkPrice(ctx, symbol)` | マーク価格取得 |
 | | `Markets.GetMarkPrices(ctx)` | 全マーク価格取得 |
@@ -165,7 +166,7 @@ func main() {
 | **借入/貸出** | `BorrowLendMarkets.GetMarkets(ctx)` | 貸借マーケット取得 |
 | | `BorrowLendMarkets.GetMarketHistory(ctx, params)` | 貸借履歴取得 |
 | **予測** | `Prediction.GetMarkets(ctx)` | 予測マーケット取得 |
-| | `Prediction.GetTags(ctx)` | 予測タグ取得 |
+| | `Prediction.GetTags(ctx, nil)` | 予測タグ取得 |
 
 ### 認証クライアントメソッド
 
@@ -176,9 +177,9 @@ func main() {
 | | `Account.GetMaxBorrowQuantity(ctx, symbol)` | 最大借入数量取得 |
 | | `Account.GetMaxOrderQuantity(ctx, params)` | 最大注文数量取得 |
 | | `Account.GetMaxWithdrawalQuantity(ctx, params)` | 最大出金数量取得 |
-| | `Account.ConvertDust(ctx, symbol)` | ダストを USDC に変換 |
+| | `Account.ConvertDust(ctx, &symbol)` | ダストを USDC に変換 |
 | **資金** | `Capital.GetBalances(ctx)` | 残高取得 |
-| | `Capital.GetCollateral(ctx)` | 担保取得 |
+| | `Capital.GetCollateral(ctx, nil)` | 担保取得 |
 | | `Capital.GetDeposits(ctx, params)` | 入金履歴取得 |
 | | `Capital.GetDepositAddress(ctx, blockchain)` | 入金アドレス取得 |
 | | `Capital.GetWithdrawals(ctx, params)` | 出金履歴取得 |
@@ -208,18 +209,17 @@ func main() {
 | | `History.GetQuoteFillHistory(ctx, params)` | クォート約定履歴取得 |
 | **借入/貸出** | `BorrowLend.GetPositions(ctx)` | ポジション取得 |
 | | `BorrowLend.Execute(ctx, params)` | 借入または貸出実行 |
-| | `BorrowLend.GetLiquidationPrice(ctx, symbol)` | 清算価格取得 |
-| **ポジション** | `Positions.GetPositions(ctx)` | オープンポジション取得 |
-| | `Positions.GetPosition(ctx, symbol)` | 特定ポジション取得 |
+| | `BorrowLend.GetLiquidationPrice(ctx, params)` | 清算価格取得 |
+| **ポジション** | `Positions.GetPositions(ctx, params)` | オープンポジション取得 |
 | **RFQ** | `RFQ.SubmitRFQ(ctx, params)` | RFQ 提出 |
 | | `RFQ.SubmitQuote(ctx, params)` | クォート提出 |
-| | `RFQ.AcceptQuote(ctx, params)` | クォート承認 |
+| | `RFQ.AcceptQuote(ctx, types.QuoteAcceptParams{QuoteID: quoteId})` | クォート承認 |
 | | `RFQ.RefreshRFQ(ctx, rfqId)` | RFQ 更新 |
-| | `RFQ.CancelRFQ(ctx, rfqId)` | RFQ キャンセル |
+| | `RFQ.CancelRFQ(ctx, types.RFQCancelParams{RfqID: rfqId})` | RFQ キャンセル |
 | **ストラテジー** | `Strategy.CreateStrategy(ctx, params)` | ストラテジー作成 |
-| | `Strategy.GetStrategy(ctx, symbol, strategyId)` | ストラテジー取得 |
+| | `Strategy.GetStrategy(ctx, strategyId)` | ストラテジー取得 |
 | | `Strategy.GetOpenStrategies(ctx, symbol)` | オープンストラテジー取得 |
-| | `Strategy.CancelStrategy(ctx, symbol, strategyId)` | ストラテジーキャンセル |
+| | `Strategy.CancelStrategy(ctx, strategyId)` | ストラテジーキャンセル |
 | | `Strategy.CancelAllStrategies(ctx, symbol)` | 全ストラテジーキャンセル |
 
 ### WebSocket クライアント
@@ -273,25 +273,29 @@ func main() {
 import "github.com/solomeowl/backpack-exchange-sdk-go/backpack/enums"
 
 // 注文関連
-enums.OrderTypeLimit       // Limit, Market
-enums.SideBid              // Bid, Ask
-enums.TimeInForceGTC       // GTC, IOC, FOK
-enums.SelfTradePreventionAllow
+enums.OrderTypeLimit                  // Limit, Market
+enums.SideBid                         // Bid, Ask
+enums.TimeInForceGTC                  // GTC, IOC, FOK
+enums.SelfTradePreventionRejectTaker  // RejectTaker, RejectMaker, RejectBoth
+enums.OrderStatusNew                  // New, Filled, Cancelled, Expired, PartiallyFilled, TriggerPending, TriggerFailed
 
 // マーケット関連
-enums.MarketTypeSpot       // Spot, Perp
-enums.KlineInterval1m      // 1m, 5m, 15m, 1h, 4h, 1d, 1w
+enums.MarketTypeSpot       // SPOT, PERP, IPERP, DATED, PREDICTION, RFQ
+enums.KlineInterval1m      // 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1month
+enums.DepthLimit5          // "5", "10", "20", "50", "100", "500", "1000"
+enums.OrderBookStateOpen   // Open, Closed, CancelOnly, LimitOnly, PostOnly
 
 // ステータス関連
-enums.OrderStatusNew       // New, Filled, Cancelled, etc.
-enums.DepositStatusPending
-enums.WithdrawalStatusPending
+enums.DepositStatusPending            // cancelled, confirmed, declined, expired, initiated, etc.
+enums.WithdrawalStatusPending         // confirmed, ownershipVerificationRequired, pending, etc.
 
-// ブロックチェーン
+// ブロックチェーン（30+ ネットワーク対応）
 enums.BlockchainSolana
 enums.BlockchainEthereum
-enums.BlockchainPolygon
 enums.BlockchainBitcoin
+enums.BlockchainArbitrum
+enums.BlockchainBase
+// ... その他
 ```
 
 ## 設定オプション
@@ -321,6 +325,14 @@ client, err := backpack.NewClient(
 詳細な API ドキュメントは [Backpack Exchange API Docs](https://docs.backpack.exchange/) を参照。
 
 ## 変更履歴
+
+### v1.1.0
+- OpenAPI 仕様に全型と列挙型を同期
+- 列挙値を API に合わせて更新（SortDirection、OrderStatus、MarketType 等）
+- Blockchain 列挙型を 4 から 30+ ネットワークに拡張
+- 新規列挙型追加：PositionState、OrderBookState、PaymentType、RfqExecutionMode 等
+- 型定義修正：Order、Position、Strategy、RFQ、Capital
+- サービスメソッドシグネチャ更新
 
 ### v1.0.0
 - 初回リリース、完全 API サポート

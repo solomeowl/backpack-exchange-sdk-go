@@ -5,7 +5,7 @@ import "github.com/solomeowl/backpack-exchange-sdk-go/backpack/enums"
 // BorrowLendMarket represents a borrow/lend market from GET /api/v1/borrowLend/markets.
 type BorrowLendMarket struct {
 	Symbol                        string `json:"symbol"`
-	State                         string `json:"state"`
+	State                         enums.BorrowLendBookState `json:"state"`
 	AssetMarkPrice                string `json:"assetMarkPrice"`
 	BorrowInterestRate            string `json:"borrowInterestRate"`
 	BorrowedQuantity              string `json:"borrowedQuantity"`

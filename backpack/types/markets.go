@@ -5,15 +5,20 @@ import "github.com/solomeowl/backpack-exchange-sdk-go/backpack/enums"
 // Market represents a trading market from GET /api/v1/markets.
 type Market struct {
 	Symbol         string                 `json:"symbol"`
-	BaseSymbol     string                 `json:"baseSymbol"`
-	QuoteSymbol    string                 `json:"quoteSymbol"`
+	BaseSymbol     enums.CustodyAsset     `json:"baseSymbol"`
+	QuoteSymbol    enums.CustodyAsset     `json:"quoteSymbol"`
 	MarketType     enums.MarketType       `json:"marketType"`
 	Filters        OrderBookFilters       `json:"filters"`
 	ImfFunction    *PositionImfFunction   `json:"imfFunction,omitempty"`
 	MmfFunction    *PositionImfFunction   `json:"mmfFunction,omitempty"`
+	FundingInterval       uint64          `json:"fundingInterval,omitempty"`
+	FundingRateUpperBound string          `json:"fundingRateUpperBound,omitempty"`
+	FundingRateLowerBound string          `json:"fundingRateLowerBound,omitempty"`
+	OpenInterestLimit     string          `json:"openInterestLimit,omitempty"`
 	OrderBookState enums.OrderBookState   `json:"orderBookState"`
 	CreatedAt      string                 `json:"createdAt"`
 	Visible        bool                   `json:"visible"`
+	PositionLimitWeight string            `json:"positionLimitWeight,omitempty"`
 }
 
 // OrderBookFilters represents price and quantity rules for a market.

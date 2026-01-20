@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"strconv"
+	"strings"
 
 	"github.com/solomeowl/backpack-exchange-sdk-go/backpack/enums"
 	"github.com/solomeowl/backpack-exchange-sdk-go/backpack/types"
@@ -28,12 +29,11 @@ func (s *MarketsService) GetMarkets(ctx context.Context, params *GetMarketsParam
 	var result []types.Market
 	queryParams := make(map[string]string)
 	if params != nil && len(params.MarketType) > 0 {
-		// Note: API accepts multiple marketType values
-		for i, mt := range params.MarketType {
-			if i == 0 {
-				queryParams["marketType"] = string(mt)
-			}
+		values := make([]string, 0, len(params.MarketType))
+		for _, mt := range params.MarketType {
+			values = append(values, string(mt))
 		}
+		queryParams["marketType"] = strings.Join(values, ",")
 	}
 	if err := s.client.Get(ctx, "api/v1/markets", queryParams, &result); err != nil {
 		return nil, err

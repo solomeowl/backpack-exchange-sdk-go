@@ -97,8 +97,9 @@ func (h *Handler) OnLiquidation(symbol string, callback func(*types.WSLiquidatio
 }
 
 // OnOrderUpdate subscribes to order updates (private stream).
-func (h *Handler) OnOrderUpdate(callback func(*types.WSOrderUpdate)) error {
-	return h.client.SubscribePrivate([]string{StreamOrderUpdate}, func(data json.RawMessage) {
+// If symbol is empty, subscribes to updates for all markets.
+func (h *Handler) OnOrderUpdate(symbol string, callback func(*types.WSOrderUpdate)) error {
+	return h.client.SubscribePrivate([]string{OrderUpdateStream(symbol)}, func(data json.RawMessage) {
 		var msg types.WSOrderUpdate
 		if err := json.Unmarshal(data, &msg); err == nil {
 			callback(&msg)
@@ -107,8 +108,9 @@ func (h *Handler) OnOrderUpdate(callback func(*types.WSOrderUpdate)) error {
 }
 
 // OnPositionUpdate subscribes to position updates (private stream).
-func (h *Handler) OnPositionUpdate(callback func(*types.WSPositionUpdate)) error {
-	return h.client.SubscribePrivate([]string{StreamPositionUpdate}, func(data json.RawMessage) {
+// If symbol is empty, subscribes to updates for all markets.
+func (h *Handler) OnPositionUpdate(symbol string, callback func(*types.WSPositionUpdate)) error {
+	return h.client.SubscribePrivate([]string{PositionUpdateStream(symbol)}, func(data json.RawMessage) {
 		var msg types.WSPositionUpdate
 		if err := json.Unmarshal(data, &msg); err == nil {
 			callback(&msg)
@@ -117,8 +119,9 @@ func (h *Handler) OnPositionUpdate(callback func(*types.WSPositionUpdate)) error
 }
 
 // OnRFQUpdate subscribes to RFQ updates (private stream).
-func (h *Handler) OnRFQUpdate(callback func(*types.WSRFQUpdate)) error {
-	return h.client.SubscribePrivate([]string{StreamRFQUpdate}, func(data json.RawMessage) {
+// If symbol is empty, subscribes to updates for all markets.
+func (h *Handler) OnRFQUpdate(symbol string, callback func(*types.WSRFQUpdate)) error {
+	return h.client.SubscribePrivate([]string{RFQUpdateStream(symbol)}, func(data json.RawMessage) {
 		var msg types.WSRFQUpdate
 		if err := json.Unmarshal(data, &msg); err == nil {
 			callback(&msg)

@@ -28,10 +28,19 @@ func (s *CapitalService) GetBalances(ctx context.Context) (types.Balances, error
 	return result, nil
 }
 
+// GetCollateralParams represents parameters for getting collateral.
+type GetCollateralParams struct {
+	SubaccountID *uint16
+}
+
 // GetCollateral retrieves account collateral information.
-func (s *CapitalService) GetCollateral(ctx context.Context) (*types.MarginAccountSummary, error) {
+func (s *CapitalService) GetCollateral(ctx context.Context, params *GetCollateralParams) (*types.MarginAccountSummary, error) {
 	var result types.MarginAccountSummary
-	if err := s.client.GetAuthenticated(ctx, "api/v1/capital/collateral", nil, "collateralQuery", &result); err != nil {
+	queryParams := make(map[string]string)
+	if params != nil && params.SubaccountID != nil {
+		queryParams["subaccountId"] = strconv.FormatUint(uint64(*params.SubaccountID), 10)
+	}
+	if err := s.client.GetAuthenticated(ctx, "api/v1/capital/collateral", queryParams, "collateralQuery", &result); err != nil {
 		return nil, err
 	}
 	return &result, nil
@@ -39,10 +48,11 @@ func (s *CapitalService) GetCollateral(ctx context.Context) (*types.MarginAccoun
 
 // GetDepositsParams represents parameters for getting deposits.
 type GetDepositsParams struct {
-	From   int64
-	To     int64
-	Limit  int
-	Offset int
+	From            int64
+	To              int64
+	Limit           int
+	Offset          int
+	ExcludePlatform *bool
 }
 
 // GetDeposits retrieves deposit history.
@@ -61,6 +71,9 @@ func (s *CapitalService) GetDeposits(ctx context.Context, params *GetDepositsPar
 		}
 		if params.Offset > 0 {
 			queryParams["offset"] = strconv.Itoa(params.Offset)
+		}
+		if params.ExcludePlatform != nil {
+			queryParams["excludePlatform"] = strconv.FormatBool(*params.ExcludePlatform)
 		}
 	}
 	if err := s.client.GetAuthenticated(ctx, "wapi/v1/capital/deposits", queryParams, "depositQueryAll", &result); err != nil {

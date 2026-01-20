@@ -7,11 +7,11 @@ type RFQ struct {
 	RfqID          string               `json:"rfqId"`
 	Symbol         string               `json:"symbol"`
 	Side           enums.Side           `json:"side"`
-	SubmissionTime string               `json:"submissionTime"`
-	ExpiryTime     string               `json:"expiryTime"`
-	Status         enums.RFQStatus      `json:"status"`
+	SubmissionTime int64                `json:"submissionTime"`
+	ExpiryTime     int64                `json:"expiryTime"`
+	Status         enums.OrderStatus    `json:"status"`
 	ExecutionMode  enums.RfqExecutionMode `json:"executionMode"`
-	CreatedAt      string               `json:"createdAt"`
+	CreatedAt      int64                `json:"createdAt"`
 	ClientID       *uint32              `json:"clientId,omitempty"`
 	Price          string               `json:"price,omitempty"`
 	Quantity       string               `json:"quantity,omitempty"`
@@ -39,8 +39,8 @@ type Quote struct {
 	RfqID     string            `json:"rfqId"`
 	BidPrice  string            `json:"bidPrice"`
 	AskPrice  string            `json:"askPrice"`
-	Status    enums.QuoteStatus `json:"status"`
-	CreatedAt string            `json:"createdAt"`
+	Status    enums.OrderStatus `json:"status"`
+	CreatedAt int64             `json:"createdAt"`
 	ClientID  *uint32           `json:"clientId,omitempty"`
 }
 
@@ -49,6 +49,23 @@ type QuoteSubmitParams struct {
 	RfqID    string  `json:"rfqId"`
 	BidPrice string  `json:"bidPrice"`
 	AskPrice string  `json:"askPrice"`
+	ClientID *uint32 `json:"clientId,omitempty"`
+	AutoLend       *bool `json:"autoLend,omitempty"`
+	AutoLendRedeem *bool `json:"autoLendRedeem,omitempty"`
+	AutoBorrow     *bool `json:"autoBorrow,omitempty"`
+	AutoBorrowRepay *bool `json:"autoBorrowRepay,omitempty"`
+}
+
+// QuoteAcceptParams represents parameters for accepting a quote (POST /api/v1/rfq/accept).
+type QuoteAcceptParams struct {
+	RfqID    string  `json:"rfqId,omitempty"`
+	ClientID *uint32 `json:"clientId,omitempty"`
+	QuoteID  string  `json:"quoteId"`
+}
+
+// RFQCancelParams represents parameters for canceling an RFQ (POST /api/v1/rfq/cancel).
+type RFQCancelParams struct {
+	RfqID    string  `json:"rfqId,omitempty"`
 	ClientID *uint32 `json:"clientId,omitempty"`
 }
 
@@ -59,7 +76,7 @@ type RFQHistoryItem struct {
 	Side           enums.Side           `json:"side"`
 	SubmissionTime string               `json:"submissionTime"`
 	ExpiryTime     string               `json:"expiryTime"`
-	Status         enums.RFQStatus      `json:"status"`
+	Status         enums.OrderStatus    `json:"status"`
 	ExecutionMode  enums.RfqExecutionMode `json:"executionMode"`
 	CreatedAt      string               `json:"createdAt"`
 	ClientID       *uint32              `json:"clientId,omitempty"`
@@ -74,7 +91,7 @@ type QuoteHistoryItem struct {
 	QuoteID   string            `json:"quoteId"`
 	BidPrice  string            `json:"bidPrice"`
 	AskPrice  string            `json:"askPrice"`
-	Status    enums.QuoteStatus `json:"status"`
+	Status    enums.OrderStatus `json:"status"`
 	CreatedAt string            `json:"createdAt"`
 	ClientID  *uint32           `json:"clientId,omitempty"`
 }

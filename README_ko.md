@@ -35,6 +35,7 @@ import (
     "log"
 
     "github.com/solomeowl/backpack-exchange-sdk-go/backpack"
+    "github.com/solomeowl/backpack-exchange-sdk-go/backpack/services"
 )
 
 func main() {
@@ -46,13 +47,13 @@ func main() {
     ctx := context.Background()
 
     // 모든 마켓 조회
-    markets, _ := client.Markets.GetMarkets(ctx)
+    markets, _ := client.Markets.GetMarkets(ctx, nil)
 
     // 티커 조회
-    ticker, _ := client.Markets.GetTicker(ctx, "SOL_USDC")
+    ticker, _ := client.Markets.GetTicker(ctx, services.GetTickerParams{Symbol: "SOL_USDC"})
 
     // 오더북 깊이 조회
-    depth, _ := client.Markets.GetDepth(ctx, "SOL_USDC")
+    depth, _ := client.Markets.GetDepth(ctx, services.GetDepthParams{Symbol: "SOL_USDC"})
 
     fmt.Printf("마켓 수: %d, 최근가: %s, 매수 깊이: %d\n",
         len(markets), ticker.LastPrice, len(depth.Bids))
@@ -97,7 +98,7 @@ func main() {
     })
 
     // 주문 내역 조회
-    history, _ := client.History.GetOrderHistory(ctx, &types.HistoryParams{
+    history, _ := client.History.GetOrderHistory(ctx, &types.OrderHistoryParams{
         Symbol: "SOL_USDC",
     })
 
@@ -150,11 +151,11 @@ func main() {
 | | `System.GetWallets(ctx)` | 지원 지갑 조회 |
 | **자산** | `Assets.GetAssets(ctx)` | 모든 자산 조회 |
 | | `Assets.GetCollateral(ctx)` | 담보 정보 조회 |
-| **마켓** | `Markets.GetMarkets(ctx)` | 모든 마켓 조회 |
+| **마켓** | `Markets.GetMarkets(ctx, params)` | 모든 마켓 조회 |
 | | `Markets.GetMarket(ctx, symbol)` | 특정 마켓 조회 |
-| | `Markets.GetTicker(ctx, symbol)` | 티커 조회 |
-| | `Markets.GetTickers(ctx)` | 모든 티커 조회 |
-| | `Markets.GetDepth(ctx, symbol)` | 오더북 조회 |
+| | `Markets.GetTicker(ctx, params)` | 티커 조회 |
+| | `Markets.GetTickers(ctx, params)` | 모든 티커 조회 |
+| | `Markets.GetDepth(ctx, params)` | 오더북 조회 |
 | | `Markets.GetKlines(ctx, params)` | 캔들스틱 조회 |
 | | `Markets.GetMarkPrice(ctx, symbol)` | 마크 가격 조회 |
 | | `Markets.GetMarkPrices(ctx)` | 모든 마크 가격 조회 |
@@ -165,7 +166,7 @@ func main() {
 | **대출** | `BorrowLendMarkets.GetMarkets(ctx)` | 대출 마켓 조회 |
 | | `BorrowLendMarkets.GetMarketHistory(ctx, params)` | 대출 내역 조회 |
 | **예측** | `Prediction.GetMarkets(ctx)` | 예측 마켓 조회 |
-| | `Prediction.GetTags(ctx)` | 예측 태그 조회 |
+| | `Prediction.GetTags(ctx, nil)` | 예측 태그 조회 |
 
 ### 인증 클라이언트 메서드
 
@@ -176,9 +177,9 @@ func main() {
 | | `Account.GetMaxBorrowQuantity(ctx, symbol)` | 최대 대출 수량 조회 |
 | | `Account.GetMaxOrderQuantity(ctx, params)` | 최대 주문 수량 조회 |
 | | `Account.GetMaxWithdrawalQuantity(ctx, params)` | 최대 출금 수량 조회 |
-| | `Account.ConvertDust(ctx, symbol)` | 더스트를 USDC로 변환 |
+| | `Account.ConvertDust(ctx, &symbol)` | 더스트를 USDC로 변환 |
 | **자금** | `Capital.GetBalances(ctx)` | 잔고 조회 |
-| | `Capital.GetCollateral(ctx)` | 담보 조회 |
+| | `Capital.GetCollateral(ctx, nil)` | 담보 조회 |
 | | `Capital.GetDeposits(ctx, params)` | 입금 내역 조회 |
 | | `Capital.GetDepositAddress(ctx, blockchain)` | 입금 주소 조회 |
 | | `Capital.GetWithdrawals(ctx, params)` | 출금 내역 조회 |
@@ -208,18 +209,17 @@ func main() {
 | | `History.GetQuoteFillHistory(ctx, params)` | 견적 체결 내역 조회 |
 | **대출** | `BorrowLend.GetPositions(ctx)` | 포지션 조회 |
 | | `BorrowLend.Execute(ctx, params)` | 대출 또는 대여 실행 |
-| | `BorrowLend.GetLiquidationPrice(ctx, symbol)` | 청산 가격 조회 |
-| **포지션** | `Positions.GetPositions(ctx)` | 오픈 포지션 조회 |
-| | `Positions.GetPosition(ctx, symbol)` | 특정 포지션 조회 |
+| | `BorrowLend.GetLiquidationPrice(ctx, params)` | 청산 가격 조회 |
+| **포지션** | `Positions.GetPositions(ctx, params)` | 오픈 포지션 조회 |
 | **RFQ** | `RFQ.SubmitRFQ(ctx, params)` | RFQ 제출 |
 | | `RFQ.SubmitQuote(ctx, params)` | 견적 제출 |
-| | `RFQ.AcceptQuote(ctx, params)` | 견적 수락 |
+| | `RFQ.AcceptQuote(ctx, types.QuoteAcceptParams{QuoteID: quoteId})` | 견적 수락 |
 | | `RFQ.RefreshRFQ(ctx, rfqId)` | RFQ 갱신 |
-| | `RFQ.CancelRFQ(ctx, rfqId)` | RFQ 취소 |
+| | `RFQ.CancelRFQ(ctx, types.RFQCancelParams{RfqID: rfqId})` | RFQ 취소 |
 | **전략** | `Strategy.CreateStrategy(ctx, params)` | 전략 생성 |
-| | `Strategy.GetStrategy(ctx, symbol, strategyId)` | 전략 조회 |
+| | `Strategy.GetStrategy(ctx, strategyId)` | 전략 조회 |
 | | `Strategy.GetOpenStrategies(ctx, symbol)` | 오픈 전략 조회 |
-| | `Strategy.CancelStrategy(ctx, symbol, strategyId)` | 전략 취소 |
+| | `Strategy.CancelStrategy(ctx, strategyId)` | 전략 취소 |
 | | `Strategy.CancelAllStrategies(ctx, symbol)` | 모든 전략 취소 |
 
 ### WebSocket 클라이언트
@@ -273,25 +273,29 @@ func main() {
 import "github.com/solomeowl/backpack-exchange-sdk-go/backpack/enums"
 
 // 주문 관련
-enums.OrderTypeLimit       // Limit, Market
-enums.SideBid              // Bid, Ask
-enums.TimeInForceGTC       // GTC, IOC, FOK
-enums.SelfTradePreventionAllow
+enums.OrderTypeLimit                  // Limit, Market
+enums.SideBid                         // Bid, Ask
+enums.TimeInForceGTC                  // GTC, IOC, FOK
+enums.SelfTradePreventionRejectTaker  // RejectTaker, RejectMaker, RejectBoth
+enums.OrderStatusNew                  // New, Filled, Cancelled, Expired, PartiallyFilled, TriggerPending, TriggerFailed
 
 // 마켓 관련
-enums.MarketTypeSpot       // Spot, Perp
-enums.KlineInterval1m      // 1m, 5m, 15m, 1h, 4h, 1d, 1w
+enums.MarketTypeSpot       // SPOT, PERP, IPERP, DATED, PREDICTION, RFQ
+enums.KlineInterval1m      // 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1month
+enums.DepthLimit5          // "5", "10", "20", "50", "100", "500", "1000"
+enums.OrderBookStateOpen   // Open, Closed, CancelOnly, LimitOnly, PostOnly
 
 // 상태 관련
-enums.OrderStatusNew       // New, Filled, Cancelled, etc.
-enums.DepositStatusPending
-enums.WithdrawalStatusPending
+enums.DepositStatusPending            // cancelled, confirmed, declined, expired, initiated, etc.
+enums.WithdrawalStatusPending         // confirmed, ownershipVerificationRequired, pending, etc.
 
-// 블록체인
+// 블록체인 (30+ 네트워크 지원)
 enums.BlockchainSolana
 enums.BlockchainEthereum
-enums.BlockchainPolygon
 enums.BlockchainBitcoin
+enums.BlockchainArbitrum
+enums.BlockchainBase
+// ... 기타
 ```
 
 ## 구성 옵션
@@ -321,6 +325,14 @@ client, err := backpack.NewClient(
 자세한 API 문서는 [Backpack Exchange API Docs](https://docs.backpack.exchange/) 참조.
 
 ## 변경 로그
+
+### v1.1.0
+- OpenAPI 사양에 모든 타입 및 열거형 동기화
+- API에 맞게 열거형 값 업데이트 (SortDirection, OrderStatus, MarketType 등)
+- Blockchain 열거형을 4개에서 30개 이상 네트워크로 확장
+- 새로운 열거형 추가: PositionState, OrderBookState, PaymentType, RfqExecutionMode 등
+- 타입 정의 수정: Order, Position, Strategy, RFQ, Capital
+- 서비스 메서드 시그니처 업데이트
 
 ### v1.0.0
 - 초기 릴리스, 전체 API 지원

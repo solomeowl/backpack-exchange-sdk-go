@@ -33,6 +33,7 @@ type Client struct {
 	conn      *websocket.Conn
 	mu        sync.RWMutex
 	callbacks map[string][]func(json.RawMessage)
+	privateStreams map[string]bool
 	done      chan struct{}
 	reconnect bool
 	connected bool
@@ -84,6 +85,7 @@ func NewClient(opts ...Option) (*Client, error) {
 		url:       DefaultWSURL,
 		window:    DefaultWindow,
 		callbacks: make(map[string][]func(json.RawMessage)),
+		privateStreams: make(map[string]bool),
 		done:      make(chan struct{}),
 		reconnect: true,
 		dialer:    websocket.DefaultDialer,
@@ -167,6 +169,11 @@ func (c *Client) subscribe(streams []string, callback func(json.RawMessage), pri
 	// Register callbacks
 	for _, stream := range streams {
 		c.callbacks[stream] = append(c.callbacks[stream], callback)
+		if private {
+			c.privateStreams[stream] = true
+		} else if _, ok := c.privateStreams[stream]; !ok {
+			c.privateStreams[stream] = false
+		}
 	}
 
 	// Build subscription message
@@ -209,6 +216,7 @@ func (c *Client) Unsubscribe(streams []string) error {
 	// Remove callbacks
 	for _, stream := range streams {
 		delete(c.callbacks, stream)
+		delete(c.privateStreams, stream)
 	}
 
 	msg := map[string]any{
@@ -331,16 +339,36 @@ func (c *Client) reconnectLoop() {
 		if err == nil {
 			// Resubscribe to all streams
 			c.mu.RLock()
-			streams := make([]string, 0, len(c.callbacks))
+			publicStreams := make([]string, 0, len(c.callbacks))
+			privateStreams := make([]string, 0, len(c.callbacks))
 			for stream := range c.callbacks {
-				streams = append(streams, stream)
+				if c.privateStreams[stream] {
+					privateStreams = append(privateStreams, stream)
+				} else {
+					publicStreams = append(publicStreams, stream)
+				}
 			}
 			c.mu.RUnlock()
 
-			if len(streams) > 0 {
+			if len(publicStreams) > 0 {
 				msg := map[string]any{
 					"method": "SUBSCRIBE",
-					"params": streams,
+					"params": publicStreams,
+				}
+				msgBytes, _ := json.Marshal(msg)
+				c.conn.WriteMessage(websocket.TextMessage, msgBytes)
+			}
+			if len(privateStreams) > 0 && c.signer != nil {
+				signature, timestamp := c.signer.GenerateWSSignature(c.window)
+				msg := map[string]any{
+					"method": "SUBSCRIBE",
+					"params": privateStreams,
+					"signature": []string{
+						c.signer.PublicKey(),
+						signature,
+						strconv.FormatInt(timestamp, 10),
+						strconv.FormatInt(c.window, 10),
+					},
 				}
 				msgBytes, _ := json.Marshal(msg)
 				c.conn.WriteMessage(websocket.TextMessage, msgBytes)

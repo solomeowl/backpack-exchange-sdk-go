@@ -35,6 +35,7 @@ import (
     "log"
 
     "github.com/solomeowl/backpack-exchange-sdk-go/backpack"
+    "github.com/solomeowl/backpack-exchange-sdk-go/backpack/services"
 )
 
 func main() {
@@ -46,13 +47,13 @@ func main() {
     ctx := context.Background()
 
     // 取得所有市場
-    markets, _ := client.Markets.GetMarkets(ctx)
+    markets, _ := client.Markets.GetMarkets(ctx, nil)
 
     // 取得行情
-    ticker, _ := client.Markets.GetTicker(ctx, "SOL_USDC")
+    ticker, _ := client.Markets.GetTicker(ctx, services.GetTickerParams{Symbol: "SOL_USDC"})
 
     // 取得訂單簿深度
-    depth, _ := client.Markets.GetDepth(ctx, "SOL_USDC")
+    depth, _ := client.Markets.GetDepth(ctx, services.GetDepthParams{Symbol: "SOL_USDC"})
 
     fmt.Printf("市場數: %d, 最新價: %s, 買單深度: %d\n",
         len(markets), ticker.LastPrice, len(depth.Bids))
@@ -97,7 +98,7 @@ func main() {
     })
 
     // 取得訂單歷史
-    history, _ := client.History.GetOrderHistory(ctx, &types.HistoryParams{
+    history, _ := client.History.GetOrderHistory(ctx, &types.OrderHistoryParams{
         Symbol: "SOL_USDC",
     })
 
@@ -150,11 +151,11 @@ func main() {
 | | `System.GetWallets(ctx)` | 取得支援的錢包 |
 | **資產** | `Assets.GetAssets(ctx)` | 取得所有資產 |
 | | `Assets.GetCollateral(ctx)` | 取得抵押品資訊 |
-| **市場** | `Markets.GetMarkets(ctx)` | 取得所有市場 |
+| **市場** | `Markets.GetMarkets(ctx, params)` | 取得所有市場 |
 | | `Markets.GetMarket(ctx, symbol)` | 取得特定市場 |
-| | `Markets.GetTicker(ctx, symbol)` | 取得行情 |
-| | `Markets.GetTickers(ctx)` | 取得所有行情 |
-| | `Markets.GetDepth(ctx, symbol)` | 取得訂單簿 |
+| | `Markets.GetTicker(ctx, params)` | 取得行情 |
+| | `Markets.GetTickers(ctx, params)` | 取得所有行情 |
+| | `Markets.GetDepth(ctx, params)` | 取得訂單簿 |
 | | `Markets.GetKlines(ctx, params)` | 取得 K 線 |
 | | `Markets.GetMarkPrice(ctx, symbol)` | 取得標記價格 |
 | | `Markets.GetMarkPrices(ctx)` | 取得所有標記價格 |
@@ -165,7 +166,7 @@ func main() {
 | **借貸** | `BorrowLendMarkets.GetMarkets(ctx)` | 取得借貸市場 |
 | | `BorrowLendMarkets.GetMarketHistory(ctx, params)` | 取得借貸歷史 |
 | **預測** | `Prediction.GetMarkets(ctx)` | 取得預測市場 |
-| | `Prediction.GetTags(ctx)` | 取得預測標籤 |
+| | `Prediction.GetTags(ctx, nil)` | 取得預測標籤 |
 
 ### 認證客戶端方法
 
@@ -176,9 +177,9 @@ func main() {
 | | `Account.GetMaxBorrowQuantity(ctx, symbol)` | 取得最大借入數量 |
 | | `Account.GetMaxOrderQuantity(ctx, params)` | 取得最大下單數量 |
 | | `Account.GetMaxWithdrawalQuantity(ctx, params)` | 取得最大提現數量 |
-| | `Account.ConvertDust(ctx, symbol)` | 將塵埃轉換為 USDC |
+| | `Account.ConvertDust(ctx, &symbol)` | 將塵埃轉換為 USDC |
 | **資金** | `Capital.GetBalances(ctx)` | 取得餘額 |
-| | `Capital.GetCollateral(ctx)` | 取得抵押品 |
+| | `Capital.GetCollateral(ctx, nil)` | 取得抵押品 |
 | | `Capital.GetDeposits(ctx, params)` | 取得充值歷史 |
 | | `Capital.GetDepositAddress(ctx, blockchain)` | 取得充值地址 |
 | | `Capital.GetWithdrawals(ctx, params)` | 取得提現歷史 |
@@ -208,18 +209,17 @@ func main() {
 | | `History.GetQuoteFillHistory(ctx, params)` | 取得報價成交歷史 |
 | **借貸** | `BorrowLend.GetPositions(ctx)` | 取得倉位 |
 | | `BorrowLend.Execute(ctx, params)` | 借入或借出 |
-| | `BorrowLend.GetLiquidationPrice(ctx, symbol)` | 取得清算價格 |
-| **倉位** | `Positions.GetPositions(ctx)` | 取得未平倉位 |
-| | `Positions.GetPosition(ctx, symbol)` | 取得特定倉位 |
+| | `BorrowLend.GetLiquidationPrice(ctx, params)` | 取得清算價格 |
+| **倉位** | `Positions.GetPositions(ctx, params)` | 取得未平倉位 |
 | **RFQ** | `RFQ.SubmitRFQ(ctx, params)` | 提交 RFQ |
 | | `RFQ.SubmitQuote(ctx, params)` | 提交報價 |
-| | `RFQ.AcceptQuote(ctx, params)` | 接受報價 |
+| | `RFQ.AcceptQuote(ctx, types.QuoteAcceptParams{QuoteID: quoteId})` | 接受報價 |
 | | `RFQ.RefreshRFQ(ctx, rfqId)` | 刷新 RFQ |
-| | `RFQ.CancelRFQ(ctx, rfqId)` | 取消 RFQ |
+| | `RFQ.CancelRFQ(ctx, types.RFQCancelParams{RfqID: rfqId})` | 取消 RFQ |
 | **策略** | `Strategy.CreateStrategy(ctx, params)` | 建立策略 |
-| | `Strategy.GetStrategy(ctx, symbol, strategyId)` | 取得策略 |
+| | `Strategy.GetStrategy(ctx, strategyId)` | 取得策略 |
 | | `Strategy.GetOpenStrategies(ctx, symbol)` | 取得未完成策略 |
-| | `Strategy.CancelStrategy(ctx, symbol, strategyId)` | 取消策略 |
+| | `Strategy.CancelStrategy(ctx, strategyId)` | 取消策略 |
 | | `Strategy.CancelAllStrategies(ctx, symbol)` | 取消所有策略 |
 
 ### WebSocket 客戶端
@@ -263,7 +263,7 @@ func main() {
     })
 
     // 私有串流範例
-    // handler.OnOrderUpdate(func(order *types.WSOrderUpdate) {
+    // handler.OnOrderUpdate("", func(order *types.WSOrderUpdate) {
     //     fmt.Printf("訂單更新: %s %s\n", order.OrderID, order.Status)
     // })
 
@@ -278,25 +278,29 @@ func main() {
 import "github.com/solomeowl/backpack-exchange-sdk-go/backpack/enums"
 
 // 訂單相關
-enums.OrderTypeLimit       // Limit, Market
-enums.SideBid              // Bid, Ask
-enums.TimeInForceGTC       // GTC, IOC, FOK
-enums.SelfTradePreventionAllow
+enums.OrderTypeLimit                  // Limit, Market
+enums.SideBid                         // Bid, Ask
+enums.TimeInForceGTC                  // GTC, IOC, FOK
+enums.SelfTradePreventionRejectTaker  // RejectTaker, RejectMaker, RejectBoth
+enums.OrderStatusNew                  // New, Filled, Cancelled, Expired, PartiallyFilled, TriggerPending, TriggerFailed
 
 // 市場相關
-enums.MarketTypeSpot       // Spot, Perp
-enums.KlineInterval1m      // 1m, 5m, 15m, 1h, 4h, 1d, 1w
+enums.MarketTypeSpot       // SPOT, PERP, IPERP, DATED, PREDICTION, RFQ
+enums.KlineInterval1m      // 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1month
+enums.DepthLimit5          // "5", "10", "20", "50", "100", "500", "1000"
+enums.OrderBookStateOpen   // Open, Closed, CancelOnly, LimitOnly, PostOnly
 
 // 狀態相關
-enums.OrderStatusNew       // New, Filled, Cancelled, etc.
-enums.DepositStatusPending
-enums.WithdrawalStatusPending
+enums.DepositStatusPending            // cancelled, confirmed, declined, expired, initiated, etc.
+enums.WithdrawalStatusPending         // confirmed, ownershipVerificationRequired, pending, etc.
 
-// 區塊鏈
+// 區塊鏈（支援 30+ 網路）
 enums.BlockchainSolana
 enums.BlockchainEthereum
-enums.BlockchainPolygon
 enums.BlockchainBitcoin
+enums.BlockchainArbitrum
+enums.BlockchainBase
+// ... 更多
 ```
 
 ## 配置選項
@@ -326,6 +330,14 @@ client, err := backpack.NewClient(
 詳細 API 文件請參閱 [Backpack Exchange API Docs](https://docs.backpack.exchange/)。
 
 ## 更新日誌
+
+### v1.1.0
+- 同步所有型別和列舉至 OpenAPI 規格
+- 更新列舉值以符合 API（SortDirection、OrderStatus、MarketType 等）
+- 擴展區塊鏈列舉從 4 個到 30+ 個網路
+- 新增列舉：PositionState、OrderBookState、PaymentType、RfqExecutionMode 等
+- 修正型別定義：Order、Position、Strategy、RFQ、Capital
+- 更新服務方法簽名
 
 ### v1.0.0
 - 初始版本，完整 API 支援

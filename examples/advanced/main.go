@@ -124,9 +124,9 @@ func errorHandlingExample(ctx context.Context, client *backpack.Client) {
 			switch {
 			case apiErr.HasCode(errors.ErrCodeInsufficientFunds):
 				fmt.Println("Action: Deposit more funds")
-			case apiErr.HasCode(errors.ErrCodeOrderNotFound):
-				fmt.Println("Action: Order may have been filled or cancelled")
-			case apiErr.HasCode(errors.ErrCodeRateLimited):
+			case apiErr.HasCode(errors.ErrCodeResourceNotFound):
+				fmt.Println("Action: Resource may have been deleted or not found")
+			case apiErr.HasCode(errors.ErrCodeTooManyRequests):
 				fmt.Println("Action: Wait before retrying")
 			default:
 				fmt.Printf("Unhandled error code: %s\n", apiErr.Code)
@@ -143,7 +143,7 @@ func errorHandlingExample(ctx context.Context, client *backpack.Client) {
 
 func paginationExample(ctx context.Context, client *backpack.Client) {
 	// Fetch trade history with pagination
-	params := &types.HistoryParams{
+	params := &types.FillHistoryParams{
 		Symbol: "SOL_USDC",
 		Limit:  10,
 		Offset: 0,

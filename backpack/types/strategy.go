@@ -17,7 +17,6 @@ type Strategy struct {
 	RandomizedIntervalQuantity bool                              `json:"randomizedIntervalQuantity"`
 	ExecutedQuantity           string                            `json:"executedQuantity,omitempty"`
 	ExecutedQuoteQuantity      string                            `json:"executedQuoteQuantity,omitempty"`
-	CancelReason               enums.StrategyCancelReason        `json:"cancelReason,omitempty"`
 	Quantity                   string                            `json:"quantity,omitempty"`
 	ClientStrategyID           uint32                            `json:"clientStrategyId,omitempty"`
 	SlippageTolerance          string                            `json:"slippageTolerance,omitempty"`

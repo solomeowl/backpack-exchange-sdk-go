@@ -8,6 +8,9 @@ const (
 	OrderTypeLimit  OrderType = "Limit"
 )
 
+// OrderTypeEnum matches the OpenAPI enum name.
+type OrderTypeEnum = OrderType
+
 // TimeInForce represents order time in force.
 type TimeInForce string
 
@@ -47,13 +50,8 @@ const (
 	CancelOrderTypeConditional CancelOrderType = "ConditionalOrder"
 )
 
-// TriggerBy represents what triggers a conditional order.
-type TriggerBy string
-
-const (
-	TriggerByLastPrice TriggerBy = "LastPrice"
-	TriggerByMarkPrice TriggerBy = "MarkPrice"
-)
+// CancelOrderTypeEnum matches the OpenAPI enum name.
+type CancelOrderTypeEnum = CancelOrderType
 
 // OrderExpiryReason represents the reason an order expired.
 type OrderExpiryReason string

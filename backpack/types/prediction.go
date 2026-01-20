@@ -1,5 +1,7 @@
 package types
 
+import "github.com/solomeowl/backpack-exchange-sdk-go/backpack/enums"
+
 // PredictionEvent represents a prediction event from GET /api/v1/prediction.
 type PredictionEvent struct {
 	Slug              string              `json:"slug"`
@@ -37,7 +39,7 @@ type PredictionTag struct {
 
 // PredictionSeries represents a series that a prediction event belongs to.
 type PredictionSeries struct {
-	Slug       string `json:"slug,omitempty"`
-	Title      string `json:"title,omitempty"`
-	Recurrence string `json:"recurrence,omitempty"`
+	Slug       string               `json:"slug"`
+	Title      string               `json:"title"`
+	Recurrence enums.SeriesRecurrence `json:"recurrence,omitempty"`
 }

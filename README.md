@@ -35,6 +35,7 @@ import (
     "log"
 
     "github.com/solomeowl/backpack-exchange-sdk-go/backpack"
+    "github.com/solomeowl/backpack-exchange-sdk-go/backpack/services"
 )
 
 func main() {
@@ -46,13 +47,13 @@ func main() {
     ctx := context.Background()
 
     // Get all markets
-    markets, _ := client.Markets.GetMarkets(ctx)
+    markets, _ := client.Markets.GetMarkets(ctx, nil)
 
     // Get ticker
-    ticker, _ := client.Markets.GetTicker(ctx, "SOL_USDC")
+    ticker, _ := client.Markets.GetTicker(ctx, services.GetTickerParams{Symbol: "SOL_USDC"})
 
     // Get order book depth
-    depth, _ := client.Markets.GetDepth(ctx, "SOL_USDC")
+    depth, _ := client.Markets.GetDepth(ctx, services.GetDepthParams{Symbol: "SOL_USDC"})
 
     fmt.Printf("Markets: %d, Ticker: %s, Depth bids: %d\n",
         len(markets), ticker.LastPrice, len(depth.Bids))
@@ -97,7 +98,7 @@ func main() {
     })
 
     // Get order history
-    history, _ := client.History.GetOrderHistory(ctx, &types.HistoryParams{
+    history, _ := client.History.GetOrderHistory(ctx, &types.OrderHistoryParams{
         Symbol: "SOL_USDC",
     })
 
@@ -150,11 +151,11 @@ func main() {
 | | `System.GetWallets(ctx)` | Get supported wallets |
 | **Assets** | `Assets.GetAssets(ctx)` | Get all assets |
 | | `Assets.GetCollateral(ctx)` | Get collateral info |
-| **Markets** | `Markets.GetMarkets(ctx)` | Get all markets |
+| **Markets** | `Markets.GetMarkets(ctx, params)` | Get all markets |
 | | `Markets.GetMarket(ctx, symbol)` | Get specific market |
-| | `Markets.GetTicker(ctx, symbol)` | Get ticker |
-| | `Markets.GetTickers(ctx)` | Get all tickers |
-| | `Markets.GetDepth(ctx, symbol)` | Get order book |
+| | `Markets.GetTicker(ctx, params)` | Get ticker |
+| | `Markets.GetTickers(ctx, params)` | Get all tickers |
+| | `Markets.GetDepth(ctx, params)` | Get order book |
 | | `Markets.GetKlines(ctx, params)` | Get candlesticks |
 | | `Markets.GetMarkPrice(ctx, symbol)` | Get mark price |
 | | `Markets.GetMarkPrices(ctx)` | Get all mark prices |
@@ -165,7 +166,7 @@ func main() {
 | **Borrow/Lend** | `BorrowLendMarkets.GetMarkets(ctx)` | Get lending markets |
 | | `BorrowLendMarkets.GetMarketHistory(ctx, params)` | Get lending history |
 | **Prediction** | `Prediction.GetMarkets(ctx)` | Get prediction markets |
-| | `Prediction.GetTags(ctx)` | Get prediction tags |
+| | `Prediction.GetTags(ctx, nil)` | Get prediction tags |
 
 ### Authentication Client Methods
 
@@ -176,9 +177,9 @@ func main() {
 | | `Account.GetMaxBorrowQuantity(ctx, symbol)` | Get max borrow amount |
 | | `Account.GetMaxOrderQuantity(ctx, params)` | Get max order size |
 | | `Account.GetMaxWithdrawalQuantity(ctx, params)` | Get max withdrawal |
-| | `Account.ConvertDust(ctx, symbol)` | Convert dust to USDC |
+| | `Account.ConvertDust(ctx, &symbol)` | Convert dust to USDC |
 | **Capital** | `Capital.GetBalances(ctx)` | Get balances |
-| | `Capital.GetCollateral(ctx)` | Get collateral |
+| | `Capital.GetCollateral(ctx, nil)` | Get collateral |
 | | `Capital.GetDeposits(ctx, params)` | Get deposit history |
 | | `Capital.GetDepositAddress(ctx, blockchain)` | Get deposit address |
 | | `Capital.GetWithdrawals(ctx, params)` | Get withdrawal history |
@@ -208,18 +209,17 @@ func main() {
 | | `History.GetQuoteFillHistory(ctx, params)` | Get quote fills |
 | **Borrow/Lend** | `BorrowLend.GetPositions(ctx)` | Get positions |
 | | `BorrowLend.Execute(ctx, params)` | Borrow or lend |
-| | `BorrowLend.GetLiquidationPrice(ctx, symbol)` | Get liquidation price |
-| **Positions** | `Positions.GetPositions(ctx)` | Get open positions |
-| | `Positions.GetPosition(ctx, symbol)` | Get specific position |
+| | `BorrowLend.GetLiquidationPrice(ctx, params)` | Get liquidation price |
+| **Positions** | `Positions.GetPositions(ctx, params)` | Get open positions |
 | **RFQ** | `RFQ.SubmitRFQ(ctx, params)` | Submit RFQ |
 | | `RFQ.SubmitQuote(ctx, params)` | Submit quote |
-| | `RFQ.AcceptQuote(ctx, params)` | Accept quote |
+| | `RFQ.AcceptQuote(ctx, types.QuoteAcceptParams{QuoteID: quoteId})` | Accept quote |
 | | `RFQ.RefreshRFQ(ctx, rfqId)` | Refresh RFQ |
-| | `RFQ.CancelRFQ(ctx, rfqId)` | Cancel RFQ |
+| | `RFQ.CancelRFQ(ctx, types.RFQCancelParams{RfqID: rfqId})` | Cancel RFQ |
 | **Strategy** | `Strategy.CreateStrategy(ctx, params)` | Create strategy |
-| | `Strategy.GetStrategy(ctx, symbol, strategyId)` | Get strategy |
+| | `Strategy.GetStrategy(ctx, strategyId)` | Get strategy |
 | | `Strategy.GetOpenStrategies(ctx, symbol)` | Get open strategies |
-| | `Strategy.CancelStrategy(ctx, symbol, strategyId)` | Cancel strategy |
+| | `Strategy.CancelStrategy(ctx, strategyId)` | Cancel strategy |
 | | `Strategy.CancelAllStrategies(ctx, symbol)` | Cancel all strategies |
 
 ### WebSocket Client
@@ -263,7 +263,7 @@ func main() {
     })
 
     // Private stream example
-    // handler.OnOrderUpdate(func(order *types.WSOrderUpdate) {
+    // handler.OnOrderUpdate("", func(order *types.WSOrderUpdate) {
     //     fmt.Printf("Order update: %s %s\n", order.OrderID, order.Status)
     // })
 
@@ -278,25 +278,29 @@ func main() {
 import "github.com/solomeowl/backpack-exchange-sdk-go/backpack/enums"
 
 // Order related
-enums.OrderTypeLimit       // Limit, Market
-enums.SideBid              // Bid, Ask
-enums.TimeInForceGTC       // GTC, IOC, FOK
-enums.SelfTradePreventionAllow
+enums.OrderTypeLimit                  // Limit, Market
+enums.SideBid                         // Bid, Ask
+enums.TimeInForceGTC                  // GTC, IOC, FOK
+enums.SelfTradePreventionRejectTaker  // RejectTaker, RejectMaker, RejectBoth
+enums.OrderStatusNew                  // New, Filled, Cancelled, Expired, PartiallyFilled, TriggerPending, TriggerFailed
 
 // Market related
-enums.MarketTypeSpot       // Spot, Perp
-enums.KlineInterval1m      // 1m, 5m, 15m, 1h, 4h, 1d, 1w
+enums.MarketTypeSpot       // SPOT, PERP, IPERP, DATED, PREDICTION, RFQ
+enums.KlineInterval1m      // 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1month
+enums.DepthLimit5          // "5", "10", "20", "50", "100", "500", "1000"
+enums.OrderBookStateOpen   // Open, Closed, CancelOnly, LimitOnly, PostOnly
 
 // Status related
-enums.OrderStatusNew       // New, Filled, Cancelled, etc.
-enums.DepositStatusPending
-enums.WithdrawalStatusPending
+enums.DepositStatusPending            // cancelled, confirmed, declined, expired, initiated, etc.
+enums.WithdrawalStatusPending         // confirmed, ownershipVerificationRequired, pending, etc.
 
-// Blockchain
+// Blockchain (30+ supported)
 enums.BlockchainSolana
 enums.BlockchainEthereum
-enums.BlockchainPolygon
 enums.BlockchainBitcoin
+enums.BlockchainArbitrum
+enums.BlockchainBase
+// ... and more
 ```
 
 ## Configuration Options
@@ -326,6 +330,14 @@ See the [examples](./examples) directory for complete usage examples:
 For detailed API documentation, visit the [Backpack Exchange API Docs](https://docs.backpack.exchange/).
 
 ## Changelog
+
+### v1.1.0
+- Sync all types and enums with OpenAPI specification
+- Update enum values to match API (SortDirection, OrderStatus, MarketType, etc.)
+- Expand Blockchain enum from 4 to 30+ networks
+- Add new enums: PositionState, OrderBookState, PaymentType, RfqExecutionMode, etc.
+- Fix type definitions for Order, Position, Strategy, RFQ, Capital
+- Update service method signatures
 
 ### v1.0.0
 - Initial release with full API support

@@ -67,6 +67,18 @@ func (s *RFQService) SubmitQuote(ctx context.Context, params types.QuoteSubmitPa
 	if params.ClientID != nil {
 		body["clientId"] = *params.ClientID
 	}
+	if params.AutoLend != nil {
+		body["autoLend"] = *params.AutoLend
+	}
+	if params.AutoLendRedeem != nil {
+		body["autoLendRedeem"] = *params.AutoLendRedeem
+	}
+	if params.AutoBorrow != nil {
+		body["autoBorrow"] = *params.AutoBorrow
+	}
+	if params.AutoBorrowRepay != nil {
+		body["autoBorrowRepay"] = *params.AutoBorrowRepay
+	}
 	if err := s.client.PostAuthenticated(ctx, "api/v1/rfq/quote", body, "quoteSubmit", &result); err != nil {
 		return nil, err
 	}
@@ -74,9 +86,15 @@ func (s *RFQService) SubmitQuote(ctx context.Context, params types.QuoteSubmitPa
 }
 
 // AcceptQuote accepts a quote.
-func (s *RFQService) AcceptQuote(ctx context.Context, quoteID string) (*types.RFQ, error) {
+func (s *RFQService) AcceptQuote(ctx context.Context, params types.QuoteAcceptParams) (*types.RFQ, error) {
 	var result types.RFQ
-	body := map[string]any{"quoteId": quoteID}
+	body := map[string]any{"quoteId": params.QuoteID}
+	if params.RfqID != "" {
+		body["rfqId"] = params.RfqID
+	}
+	if params.ClientID != nil {
+		body["clientId"] = *params.ClientID
+	}
 	if err := s.client.PostAuthenticated(ctx, "api/v1/rfq/accept", body, "quoteAccept", &result); err != nil {
 		return nil, err
 	}
@@ -94,9 +112,15 @@ func (s *RFQService) RefreshRFQ(ctx context.Context, rfqID string) (*types.RFQ, 
 }
 
 // CancelRFQ cancels an RFQ.
-func (s *RFQService) CancelRFQ(ctx context.Context, rfqID string) (*types.RFQ, error) {
+func (s *RFQService) CancelRFQ(ctx context.Context, params types.RFQCancelParams) (*types.RFQ, error) {
 	var result types.RFQ
-	body := map[string]any{"rfqId": rfqID}
+	body := map[string]any{}
+	if params.RfqID != "" {
+		body["rfqId"] = params.RfqID
+	}
+	if params.ClientID != nil {
+		body["clientId"] = *params.ClientID
+	}
 	if err := s.client.PostAuthenticated(ctx, "api/v1/rfq/cancel", body, "rfqCancel", &result); err != nil {
 		return nil, err
 	}

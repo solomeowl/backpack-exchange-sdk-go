@@ -30,6 +30,10 @@ Thumbs.db
 .env.local
 *.env
 
+# Local artifacts
+backpack_openapi_full_expanded.txt
+main
+
 # Build
 bin/
 dist/

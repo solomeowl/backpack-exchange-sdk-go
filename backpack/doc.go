@@ -14,7 +14,7 @@
 //	}
 //
 //	// Get all markets
-//	markets, err := client.Markets.GetMarkets(context.Background())
+//	markets, err := client.Markets.GetMarkets(context.Background(), nil)
 //
 //	// Create an authenticated client
 //	client, err := backpack.NewClient(

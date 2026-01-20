@@ -59,5 +59,8 @@ const (
 	BorrowLendSourceLiquidationAdl     BorrowLendSource = "LiquidationAdl"
 	BorrowLendSourceLiquidationBackstop BorrowLendSource = "LiquidationBackstop"
 	BorrowLendSourceManual             BorrowLendSource = "Manual"
-	BorrowLendSourceRealization        BorrowLendSource = "Realization"
+	BorrowLendSourceReconciliation     BorrowLendSource = "Reconciliation"
+	BorrowLendSourceRfq                BorrowLendSource = "Rfq"
+	BorrowLendSourceSpotMargin         BorrowLendSource = "SpotMargin"
+	BorrowLendSourceWithdrawal         BorrowLendSource = "Withdrawal"
 )

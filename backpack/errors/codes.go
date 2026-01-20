@@ -1,48 +1,44 @@
 package errors
 
-// ErrorCode represents known API error codes.
-type ErrorCode string
+// ApiErrorCode represents API error codes defined by the OpenAPI spec.
+type ApiErrorCode string
+
+// ErrorCode is kept for backwards compatibility with previous SDK versions.
+type ErrorCode = ApiErrorCode
 
 // Known error codes from Backpack Exchange API.
 const (
-	// Authentication errors
-	ErrCodeInvalidSignature   ErrorCode = "INVALID_SIGNATURE"
-	ErrCodeInvalidAPIKey      ErrorCode = "INVALID_API_KEY"
-	ErrCodeExpiredTimestamp   ErrorCode = "EXPIRED_TIMESTAMP"
-	ErrCodeInvalidTimestamp   ErrorCode = "INVALID_TIMESTAMP"
-	ErrCodeUnauthorized       ErrorCode = "UNAUTHORIZED"
-
-	// Order errors
-	ErrCodeInsufficientFunds  ErrorCode = "INSUFFICIENT_FUNDS"
-	ErrCodeOrderNotFound      ErrorCode = "ORDER_NOT_FOUND"
-	ErrCodeInvalidOrderType   ErrorCode = "INVALID_ORDER_TYPE"
-	ErrCodeInvalidSide        ErrorCode = "INVALID_SIDE"
-	ErrCodeInvalidQuantity    ErrorCode = "INVALID_QUANTITY"
-	ErrCodeInvalidPrice       ErrorCode = "INVALID_PRICE"
-	ErrCodeMinNotional        ErrorCode = "MIN_NOTIONAL"
-	ErrCodeMaxOrders          ErrorCode = "MAX_ORDERS"
-	ErrCodeSelfTrade          ErrorCode = "SELF_TRADE"
-	ErrCodePostOnlyRejected   ErrorCode = "POST_ONLY_REJECTED"
-
-	// Market errors
-	ErrCodeMarketNotFound     ErrorCode = "MARKET_NOT_FOUND"
-	ErrCodeMarketClosed       ErrorCode = "MARKET_CLOSED"
-
-	// Rate limiting
-	ErrCodeRateLimited        ErrorCode = "RATE_LIMITED"
-	ErrCodeTooManyRequests    ErrorCode = "TOO_MANY_REQUESTS"
-
-	// System errors
-	ErrCodeInternalError      ErrorCode = "INTERNAL_ERROR"
-	ErrCodeServiceUnavailable ErrorCode = "SERVICE_UNAVAILABLE"
-
-	// Withdrawal errors
-	ErrCodeWithdrawalDisabled ErrorCode = "WITHDRAWAL_DISABLED"
-	ErrCodeInvalidAddress     ErrorCode = "INVALID_ADDRESS"
-	ErrCodeMinWithdrawal      ErrorCode = "MIN_WITHDRAWAL"
-
-	// Position errors
-	ErrCodePositionNotFound   ErrorCode = "POSITION_NOT_FOUND"
-	ErrCodeMaxLeverage        ErrorCode = "MAX_LEVERAGE"
-	ErrCodeLiquidation        ErrorCode = "LIQUIDATION"
+	ErrCodeAccountDeactivated        ApiErrorCode = "ACCOUNT_DEACTIVATED"
+	ErrCodeAccountLiquidating        ApiErrorCode = "ACCOUNT_LIQUIDATING"
+	ErrCodeBorrowLimit               ApiErrorCode = "BORROW_LIMIT"
+	ErrCodeBorrowRequiresLendRedeem  ApiErrorCode = "BORROW_REQUIRES_LEND_REDEEM"
+	ErrCodeForbidden                 ApiErrorCode = "FORBIDDEN"
+	ErrCodeInsufficientFunds         ApiErrorCode = "INSUFFICIENT_FUNDS"
+	ErrCodeInsufficientMargin        ApiErrorCode = "INSUFFICIENT_MARGIN"
+	ErrCodeInsufficientSupply        ApiErrorCode = "INSUFFICIENT_SUPPLY"
+	ErrCodeInvalidAsset              ApiErrorCode = "INVALID_ASSET"
+	ErrCodeInvalidClientRequest      ApiErrorCode = "INVALID_CLIENT_REQUEST"
+	ErrCodeInvalidMarket             ApiErrorCode = "INVALID_MARKET"
+	ErrCodeInvalidOrder              ApiErrorCode = "INVALID_ORDER"
+	ErrCodeInvalidPositionID         ApiErrorCode = "INVALID_POSITION_ID"
+	ErrCodeInvalidQuantity           ApiErrorCode = "INVALID_QUANTITY"
+	ErrCodeInvalidRange              ApiErrorCode = "INVALID_RANGE"
+	ErrCodeInvalidSignature          ApiErrorCode = "INVALID_SIGNATURE"
+	ErrCodeInvalidSource             ApiErrorCode = "INVALID_SOURCE"
+	ErrCodeInvalidSymbol             ApiErrorCode = "INVALID_SYMBOL"
+	ErrCodeInvalidTwoFactorCode      ApiErrorCode = "INVALID_TWO_FACTOR_CODE"
+	ErrCodeLendLimit                 ApiErrorCode = "LEND_LIMIT"
+	ErrCodeLendRequiresBorrowRepay   ApiErrorCode = "LEND_REQUIRES_BORROW_REPAY"
+	ErrCodeMaintenance               ApiErrorCode = "MAINTENANCE"
+	ErrCodeMaxLeverageReached        ApiErrorCode = "MAX_LEVERAGE_REACHED"
+	ErrCodeNotImplemented            ApiErrorCode = "NOT_IMPLEMENTED"
+	ErrCodeOrderLimit                ApiErrorCode = "ORDER_LIMIT"
+	ErrCodePositionLimit             ApiErrorCode = "POSITION_LIMIT"
+	ErrCodePreconditionFailed        ApiErrorCode = "PRECONDITION_FAILED"
+	ErrCodeResourceNotFound          ApiErrorCode = "RESOURCE_NOT_FOUND"
+	ErrCodeServerError               ApiErrorCode = "SERVER_ERROR"
+	ErrCodeTimeout                   ApiErrorCode = "TIMEOUT"
+	ErrCodeTooManyRequests           ApiErrorCode = "TOO_MANY_REQUESTS"
+	ErrCodeTradingPaused             ApiErrorCode = "TRADING_PAUSED"
+	ErrCodeUnauthorized              ApiErrorCode = "UNAUTHORIZED"
 )

@@ -108,7 +108,7 @@ func main() {
 
 	// Get order history
 	fmt.Println("\n=== Order History ===")
-	history, err := client.History.GetOrderHistory(ctx, &types.HistoryParams{
+	history, err := client.History.GetOrderHistory(ctx, &types.OrderHistoryParams{
 		Limit: 5,
 	})
 	if err != nil {

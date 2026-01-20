@@ -32,8 +32,8 @@ func (s *AccountService) UpdateAccount(ctx context.Context, settings types.Accou
 }
 
 // GetMaxBorrowQuantity retrieves the maximum borrow quantity for an asset.
-func (s *AccountService) GetMaxBorrowQuantity(ctx context.Context, symbol string) (*types.MaxQuantityResponse, error) {
-	var result types.MaxQuantityResponse
+func (s *AccountService) GetMaxBorrowQuantity(ctx context.Context, symbol string) (*types.MaxBorrowQuantity, error) {
+	var result types.MaxBorrowQuantity
 	params := map[string]string{"symbol": symbol}
 	if err := s.client.GetAuthenticated(ctx, "api/v1/account/limits/borrow", params, "maxBorrowQuantity", &result); err != nil {
 		return nil, err
@@ -53,8 +53,8 @@ type GetMaxOrderQuantityParams struct {
 }
 
 // GetMaxOrderQuantity retrieves the maximum order quantity.
-func (s *AccountService) GetMaxOrderQuantity(ctx context.Context, params GetMaxOrderQuantityParams) (*types.MaxQuantityResponse, error) {
-	var result types.MaxQuantityResponse
+func (s *AccountService) GetMaxOrderQuantity(ctx context.Context, params GetMaxOrderQuantityParams) (*types.MaxOrderQuantity, error) {
+	var result types.MaxOrderQuantity
 	queryParams := map[string]string{
 		"symbol": params.Symbol,
 		"side":   string(params.Side),
@@ -88,8 +88,8 @@ type GetMaxWithdrawalQuantityParams struct {
 }
 
 // GetMaxWithdrawalQuantity retrieves the maximum withdrawal quantity for an asset.
-func (s *AccountService) GetMaxWithdrawalQuantity(ctx context.Context, params GetMaxWithdrawalQuantityParams) (*types.MaxQuantityResponse, error) {
-	var result types.MaxQuantityResponse
+func (s *AccountService) GetMaxWithdrawalQuantity(ctx context.Context, params GetMaxWithdrawalQuantityParams) (*types.MaxWithdrawalQuantity, error) {
+	var result types.MaxWithdrawalQuantity
 	queryParams := map[string]string{"symbol": params.Symbol}
 	if params.AutoBorrow != nil {
 		queryParams["autoBorrow"] = boolToString(*params.AutoBorrow)
@@ -104,13 +104,16 @@ func (s *AccountService) GetMaxWithdrawalQuantity(ctx context.Context, params Ge
 }
 
 // ConvertDust converts a dust balance to USDC.
-func (s *AccountService) ConvertDust(ctx context.Context, symbol string) (*types.DustConversion, error) {
-	var result types.DustConversion
-	body := map[string]any{"symbol": symbol}
-	if err := s.client.PostAuthenticated(ctx, "api/v1/account/convertDust", body, "convertDust", &result); err != nil {
-		return nil, err
+// If symbol is nil, all dust balances are converted.
+func (s *AccountService) ConvertDust(ctx context.Context, symbol *string) error {
+	body := map[string]any{}
+	if symbol != nil {
+		body["symbol"] = *symbol
 	}
-	return &result, nil
+	if err := s.client.PostAuthenticated(ctx, "api/v1/account/convertDust", body, "convertDust", nil); err != nil {
+		return err
+	}
+	return nil
 }
 
 func boolToString(b bool) string {

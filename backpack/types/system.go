@@ -4,7 +4,7 @@ import "github.com/solomeowl/backpack-exchange-sdk-go/backpack/enums"
 
 // SystemStatus represents the system status response.
 type SystemStatus struct {
-	Status  enums.SystemStatus `json:"status"`
+	Status  enums.Status       `json:"status"`
 	Message string             `json:"message,omitempty"`
 }
 

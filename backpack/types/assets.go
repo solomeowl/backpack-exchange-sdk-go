@@ -4,7 +4,7 @@ import "github.com/solomeowl/backpack-exchange-sdk-go/backpack/enums"
 
 // Asset represents a market asset from GET /api/v1/assets.
 type Asset struct {
-	Symbol      string  `json:"symbol"`
+	Symbol      enums.CustodyAsset `json:"symbol"`
 	DisplayName string  `json:"displayName"`
 	CoingeckoID string  `json:"coingeckoId,omitempty"`
 	Tokens      []Token `json:"tokens"`
@@ -25,7 +25,7 @@ type Token struct {
 
 // CollateralInfo represents collateral parameters from GET /api/v1/collateral.
 type CollateralInfo struct {
-	Symbol          string             `json:"symbol"`
+	Symbol          enums.CustodyAsset  `json:"symbol"`
 	ImfFunction     PositionImfFunction `json:"imfFunction"`
 	MmfFunction     PositionImfFunction `json:"mmfFunction"`
 	HaircutFunction CollateralFunction  `json:"haircutFunction"`

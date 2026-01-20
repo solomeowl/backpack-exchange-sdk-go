@@ -31,7 +31,7 @@ type MarginAccountSummary struct {
 
 // CollateralItem represents a single collateral item.
 type CollateralItem struct {
-	Symbol            string `json:"symbol"`
+	Symbol            enums.CustodyAsset `json:"symbol"`
 	AssetMarkPrice    string `json:"assetMarkPrice"`
 	TotalQuantity     string `json:"totalQuantity"`
 	BalanceNotional   string `json:"balanceNotional"`
@@ -50,11 +50,11 @@ type Deposit struct {
 	Source          enums.DepositSource  `json:"source"`
 	Status          enums.DepositStatus  `json:"status"`
 	TransactionHash string               `json:"transactionHash,omitempty"`
-	Symbol          string               `json:"symbol"`
+	Symbol          enums.CustodyAsset   `json:"symbol"`
 	Quantity        string               `json:"quantity"`
 	CreatedAt       string               `json:"createdAt"`
 	FiatAmount      float64              `json:"fiatAmount,omitempty"`
-	FiatCurrency    string               `json:"fiatCurrency,omitempty"`
+	FiatCurrency    enums.FiatAsset      `json:"fiatCurrency,omitempty"`
 	InstitutionBic  string               `json:"institutionBic,omitempty"`
 	PlatformMemo    string               `json:"platformMemo,omitempty"`
 }
@@ -74,9 +74,9 @@ type Withdrawal struct {
 	Fee               string                          `json:"fee"`
 	FiatFee           string                          `json:"fiatFee,omitempty"`
 	FiatState         enums.EqualsMoneyWithdrawalState `json:"fiatState,omitempty"`
-	FiatSymbol        string                          `json:"fiatSymbol,omitempty"`
+	FiatSymbol        enums.FiatAsset                 `json:"fiatSymbol,omitempty"`
 	ProviderID        string                          `json:"providerId,omitempty"`
-	Symbol            string                          `json:"symbol"`
+	Symbol            enums.CustodyAsset              `json:"symbol"`
 	Status            enums.WithdrawalStatus          `json:"status"`
 	SubaccountID      uint16                          `json:"subaccountId,omitempty"`
 	ToAddress         string                          `json:"toAddress"`
@@ -86,16 +86,27 @@ type Withdrawal struct {
 	BankName          string                          `json:"bankName,omitempty"`
 	BankIdentifier    string                          `json:"bankIdentifier,omitempty"`
 	AccountIdentifier string                          `json:"accountIdentifier,omitempty"`
+	TriggerAt         string                          `json:"triggerAt,omitempty"`
 }
 
 // WithdrawalRequest represents a withdrawal request for POST /wapi/v1/capital/withdrawals.
 type WithdrawalRequest struct {
-	Symbol        string           `json:"symbol"`
-	Blockchain    enums.Blockchain `json:"blockchain"`
-	Address       string           `json:"address"`
-	Quantity      string           `json:"quantity"`
-	TwoFactorCode string           `json:"twoFactorCode,omitempty"`
-	ClientID      string           `json:"clientId,omitempty"`
+	Address              string                          `json:"address"`
+	Blockchain           enums.Blockchain               `json:"blockchain"`
+	ClientID             string                          `json:"clientId,omitempty"`
+	Quantity             string                          `json:"quantity"`
+	Symbol               enums.CustodyAsset             `json:"symbol"`
+	TwoFactorToken       string                          `json:"twoFactorToken,omitempty"`
+	AutoBorrow           *bool                           `json:"autoBorrow,omitempty"`
+	AutoLendRedeem       *bool                           `json:"autoLendRedeem,omitempty"`
+	RecipientInformation *WithdrawalRecipientInformation `json:"recipientInformation,omitempty"`
+}
+
+// WithdrawalRecipientInformation represents recipient details for fiat withdrawals.
+type WithdrawalRecipientInformation struct {
+	WithdrawalAddressID     int32  `json:"withdrawal_address_id"`
+	WithdrawalPurpose       string `json:"withdrawal_purpose,omitempty"`
+	SanctionsRepresentation *bool  `json:"sanctions_representation,omitempty"`
 }
 
 // WithdrawalDelay represents withdrawal delay settings from /wapi/v1/capital/withdrawals/delay.

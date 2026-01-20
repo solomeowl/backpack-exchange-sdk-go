@@ -1,24 +1,10 @@
 package enums
 
-// RFQStatus represents the status of an RFQ (uses OrderStatus).
-type RFQStatus string
+// RFQStatus matches the OpenAPI status type for RFQ history.
+type RFQStatus = OrderStatus
 
-const (
-	RFQStatusNew       RFQStatus = "New"
-	RFQStatusFilled    RFQStatus = "Filled"
-	RFQStatusCancelled RFQStatus = "Cancelled"
-	RFQStatusExpired   RFQStatus = "Expired"
-)
-
-// QuoteStatus represents the status of a quote (uses OrderStatus).
-type QuoteStatus string
-
-const (
-	QuoteStatusNew       QuoteStatus = "New"
-	QuoteStatusFilled    QuoteStatus = "Filled"
-	QuoteStatusCancelled QuoteStatus = "Cancelled"
-	QuoteStatusExpired   QuoteStatus = "Expired"
-)
+// QuoteStatus matches the OpenAPI status type for quote history.
+type QuoteStatus = OrderStatus
 
 // RfqExecutionMode represents the RFQ execution mode.
 type RfqExecutionMode string

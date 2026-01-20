@@ -35,6 +35,7 @@ import (
     "log"
 
     "github.com/solomeowl/backpack-exchange-sdk-go/backpack"
+    "github.com/solomeowl/backpack-exchange-sdk-go/backpack/services"
 )
 
 func main() {
@@ -46,13 +47,13 @@ func main() {
     ctx := context.Background()
 
     // 获取所有市场
-    markets, _ := client.Markets.GetMarkets(ctx)
+    markets, _ := client.Markets.GetMarkets(ctx, nil)
 
     // 获取行情
-    ticker, _ := client.Markets.GetTicker(ctx, "SOL_USDC")
+    ticker, _ := client.Markets.GetTicker(ctx, services.GetTickerParams{Symbol: "SOL_USDC"})
 
     // 获取订单簿深度
-    depth, _ := client.Markets.GetDepth(ctx, "SOL_USDC")
+    depth, _ := client.Markets.GetDepth(ctx, services.GetDepthParams{Symbol: "SOL_USDC"})
 
     fmt.Printf("市场数: %d, 最新价: %s, 买单深度: %d\n",
         len(markets), ticker.LastPrice, len(depth.Bids))
@@ -97,7 +98,7 @@ func main() {
     })
 
     // 获取订单历史
-    history, _ := client.History.GetOrderHistory(ctx, &types.HistoryParams{
+    history, _ := client.History.GetOrderHistory(ctx, &types.OrderHistoryParams{
         Symbol: "SOL_USDC",
     })
 
@@ -150,11 +151,11 @@ func main() {
 | | `System.GetWallets(ctx)` | 获取支持的钱包 |
 | **资产** | `Assets.GetAssets(ctx)` | 获取所有资产 |
 | | `Assets.GetCollateral(ctx)` | 获取抵押品信息 |
-| **市场** | `Markets.GetMarkets(ctx)` | 获取所有市场 |
+| **市场** | `Markets.GetMarkets(ctx, params)` | 获取所有市场 |
 | | `Markets.GetMarket(ctx, symbol)` | 获取特定市场 |
-| | `Markets.GetTicker(ctx, symbol)` | 获取行情 |
-| | `Markets.GetTickers(ctx)` | 获取所有行情 |
-| | `Markets.GetDepth(ctx, symbol)` | 获取订单簿 |
+| | `Markets.GetTicker(ctx, params)` | 获取行情 |
+| | `Markets.GetTickers(ctx, params)` | 获取所有行情 |
+| | `Markets.GetDepth(ctx, params)` | 获取订单簿 |
 | | `Markets.GetKlines(ctx, params)` | 获取 K 线 |
 | | `Markets.GetMarkPrice(ctx, symbol)` | 获取标记价格 |
 | | `Markets.GetMarkPrices(ctx)` | 获取所有标记价格 |
@@ -165,7 +166,7 @@ func main() {
 | **借贷** | `BorrowLendMarkets.GetMarkets(ctx)` | 获取借贷市场 |
 | | `BorrowLendMarkets.GetMarketHistory(ctx, params)` | 获取借贷历史 |
 | **预测** | `Prediction.GetMarkets(ctx)` | 获取预测市场 |
-| | `Prediction.GetTags(ctx)` | 获取预测标签 |
+| | `Prediction.GetTags(ctx, nil)` | 获取预测标签 |
 
 ### 认证客户端方法
 
@@ -176,9 +177,9 @@ func main() {
 | | `Account.GetMaxBorrowQuantity(ctx, symbol)` | 获取最大借入数量 |
 | | `Account.GetMaxOrderQuantity(ctx, params)` | 获取最大下单数量 |
 | | `Account.GetMaxWithdrawalQuantity(ctx, params)` | 获取最大提现数量 |
-| | `Account.ConvertDust(ctx, symbol)` | 将尘埃转换为 USDC |
+| | `Account.ConvertDust(ctx, &symbol)` | 将尘埃转换为 USDC |
 | **资金** | `Capital.GetBalances(ctx)` | 获取余额 |
-| | `Capital.GetCollateral(ctx)` | 获取抵押品 |
+| | `Capital.GetCollateral(ctx, nil)` | 获取抵押品 |
 | | `Capital.GetDeposits(ctx, params)` | 获取充值历史 |
 | | `Capital.GetDepositAddress(ctx, blockchain)` | 获取充值地址 |
 | | `Capital.GetWithdrawals(ctx, params)` | 获取提现历史 |
@@ -208,18 +209,17 @@ func main() {
 | | `History.GetQuoteFillHistory(ctx, params)` | 获取报价成交历史 |
 | **借贷** | `BorrowLend.GetPositions(ctx)` | 获取仓位 |
 | | `BorrowLend.Execute(ctx, params)` | 借入或借出 |
-| | `BorrowLend.GetLiquidationPrice(ctx, symbol)` | 获取清算价格 |
-| **仓位** | `Positions.GetPositions(ctx)` | 获取未平仓位 |
-| | `Positions.GetPosition(ctx, symbol)` | 获取特定仓位 |
+| | `BorrowLend.GetLiquidationPrice(ctx, params)` | 获取清算价格 |
+| **仓位** | `Positions.GetPositions(ctx, params)` | 获取未平仓位 |
 | **RFQ** | `RFQ.SubmitRFQ(ctx, params)` | 提交 RFQ |
 | | `RFQ.SubmitQuote(ctx, params)` | 提交报价 |
-| | `RFQ.AcceptQuote(ctx, params)` | 接受报价 |
+| | `RFQ.AcceptQuote(ctx, types.QuoteAcceptParams{QuoteID: quoteId})` | 接受报价 |
 | | `RFQ.RefreshRFQ(ctx, rfqId)` | 刷新 RFQ |
-| | `RFQ.CancelRFQ(ctx, rfqId)` | 取消 RFQ |
+| | `RFQ.CancelRFQ(ctx, types.RFQCancelParams{RfqID: rfqId})` | 取消 RFQ |
 | **策略** | `Strategy.CreateStrategy(ctx, params)` | 创建策略 |
-| | `Strategy.GetStrategy(ctx, symbol, strategyId)` | 获取策略 |
+| | `Strategy.GetStrategy(ctx, strategyId)` | 获取策略 |
 | | `Strategy.GetOpenStrategies(ctx, symbol)` | 获取未完成策略 |
-| | `Strategy.CancelStrategy(ctx, symbol, strategyId)` | 取消策略 |
+| | `Strategy.CancelStrategy(ctx, strategyId)` | 取消策略 |
 | | `Strategy.CancelAllStrategies(ctx, symbol)` | 取消所有策略 |
 
 ### WebSocket 客户端
@@ -273,25 +273,29 @@ func main() {
 import "github.com/solomeowl/backpack-exchange-sdk-go/backpack/enums"
 
 // 订单相关
-enums.OrderTypeLimit       // Limit, Market
-enums.SideBid              // Bid, Ask
-enums.TimeInForceGTC       // GTC, IOC, FOK
-enums.SelfTradePreventionAllow
+enums.OrderTypeLimit                  // Limit, Market
+enums.SideBid                         // Bid, Ask
+enums.TimeInForceGTC                  // GTC, IOC, FOK
+enums.SelfTradePreventionRejectTaker  // RejectTaker, RejectMaker, RejectBoth
+enums.OrderStatusNew                  // New, Filled, Cancelled, Expired, PartiallyFilled, TriggerPending, TriggerFailed
 
 // 市场相关
-enums.MarketTypeSpot       // Spot, Perp
-enums.KlineInterval1m      // 1m, 5m, 15m, 1h, 4h, 1d, 1w
+enums.MarketTypeSpot       // SPOT, PERP, IPERP, DATED, PREDICTION, RFQ
+enums.KlineInterval1m      // 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1month
+enums.DepthLimit5          // "5", "10", "20", "50", "100", "500", "1000"
+enums.OrderBookStateOpen   // Open, Closed, CancelOnly, LimitOnly, PostOnly
 
 // 状态相关
-enums.OrderStatusNew       // New, Filled, Cancelled, etc.
-enums.DepositStatusPending
-enums.WithdrawalStatusPending
+enums.DepositStatusPending            // cancelled, confirmed, declined, expired, initiated, etc.
+enums.WithdrawalStatusPending         // confirmed, ownershipVerificationRequired, pending, etc.
 
-// 区块链
+// 区块链（支持 30+ 网络）
 enums.BlockchainSolana
 enums.BlockchainEthereum
-enums.BlockchainPolygon
 enums.BlockchainBitcoin
+enums.BlockchainArbitrum
+enums.BlockchainBase
+// ... 更多
 ```
 
 ## 配置选项
@@ -321,6 +325,14 @@ client, err := backpack.NewClient(
 详细 API 文档请参阅 [Backpack Exchange API Docs](https://docs.backpack.exchange/)。
 
 ## 更新日志
+
+### v1.1.0
+- 同步所有类型和枚举至 OpenAPI 规格
+- 更新枚举值以符合 API（SortDirection、OrderStatus、MarketType 等）
+- 扩展区块链枚举从 4 个到 30+ 个网络
+- 新增枚举：PositionState、OrderBookState、PaymentType、RfqExecutionMode 等
+- 修正类型定义：Order、Position、Strategy、RFQ、Capital
+- 更新服务方法签名
 
 ### v1.0.0
 - 初始版本，完整 API 支持

@@ -5,7 +5,7 @@ import "github.com/solomeowl/backpack-exchange-sdk-go/backpack/enums"
 // Order represents an order from GET /api/v1/order or GET /api/v1/orders.
 type Order struct {
 	ID                     string                       `json:"id"`
-	CreatedAt              string                       `json:"createdAt"`
+	CreatedAt              TimeString                   `json:"createdAt"`
 	OrderType              enums.OrderType              `json:"orderType"`
 	SelfTradePrevention    enums.SelfTradePrevention    `json:"selfTradePrevention"`
 	Status                 enums.OrderStatus            `json:"status"`

@@ -22,11 +22,32 @@ type Account struct {
 type AccountSettings struct {
 	AutoBorrowSettlements *bool `json:"autoBorrowSettlements,omitempty"`
 	AutoLend              *bool `json:"autoLend,omitempty"`
-	AutoRealizePnl        *bool `json:"autoRealizePnl,omitempty"`
 	AutoRepayBorrows      *bool `json:"autoRepayBorrows,omitempty"`
+	LeverageLimit         string `json:"leverageLimit,omitempty"`
 }
 
-// MaxQuantityResponse represents max quantity query response.
-type MaxQuantityResponse struct {
-	MaxQuantity string `json:"maxQuantity"`
+// MaxBorrowQuantity represents max borrow quantity query response.
+type MaxBorrowQuantity struct {
+	MaxBorrowQuantity string `json:"maxBorrowQuantity"`
+	Symbol            string `json:"symbol"`
+}
+
+// MaxOrderQuantity represents max order quantity query response.
+type MaxOrderQuantity struct {
+	AutoBorrow      *bool  `json:"autoBorrow,omitempty"`
+	AutoBorrowRepay *bool  `json:"autoBorrowRepay,omitempty"`
+	AutoLendRedeem  *bool  `json:"autoLendRedeem,omitempty"`
+	MaxOrderQuantity string `json:"maxOrderQuantity"`
+	Price           string `json:"price,omitempty"`
+	Side            string `json:"side"`
+	Symbol          string `json:"symbol"`
+	ReduceOnly      *bool  `json:"reduceOnly,omitempty"`
+}
+
+// MaxWithdrawalQuantity represents max withdrawal quantity query response.
+type MaxWithdrawalQuantity struct {
+	AutoBorrow          *bool  `json:"autoBorrow,omitempty"`
+	AutoLendRedeem      *bool  `json:"autoLendRedeem,omitempty"`
+	MaxWithdrawalQuantity string `json:"maxWithdrawalQuantity"`
+	Symbol              string `json:"symbol"`
 }

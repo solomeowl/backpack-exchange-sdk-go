@@ -61,10 +61,25 @@ func (s *PredictionService) GetEvents(ctx context.Context, params *GetEventsPara
 	return result, nil
 }
 
-// GetTags retrieves all prediction market tags.
-func (s *PredictionService) GetTags(ctx context.Context) ([]types.PredictionTag, error) {
+// GetTagsParams represents parameters for getting prediction tags.
+type GetTagsParams struct {
+	Limit  int // Optional: default 100, max 1000
+	Offset int // Optional: default 0
+}
+
+// GetTags retrieves prediction market tags.
+func (s *PredictionService) GetTags(ctx context.Context, params *GetTagsParams) ([]types.PredictionTag, error) {
 	var result []types.PredictionTag
-	if err := s.client.Get(ctx, "api/v1/prediction/tags", nil, &result); err != nil {
+	queryParams := make(map[string]string)
+	if params != nil {
+		if params.Limit > 0 {
+			queryParams["limit"] = strconv.Itoa(params.Limit)
+		}
+		if params.Offset > 0 {
+			queryParams["offset"] = strconv.Itoa(params.Offset)
+		}
+	}
+	if err := s.client.Get(ctx, "api/v1/prediction/tags", queryParams, &result); err != nil {
 		return nil, err
 	}
 	return result, nil

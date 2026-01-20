@@ -35,6 +35,7 @@ import (
     "log"
 
     "github.com/solomeowl/backpack-exchange-sdk-go/backpack"
+    "github.com/solomeowl/backpack-exchange-sdk-go/backpack/services"
 )
 
 func main() {
@@ -46,13 +47,13 @@ func main() {
     ctx := context.Background()
 
     // Obter todos os mercados
-    markets, _ := client.Markets.GetMarkets(ctx)
+    markets, _ := client.Markets.GetMarkets(ctx, nil)
 
     // Obter ticker
-    ticker, _ := client.Markets.GetTicker(ctx, "SOL_USDC")
+    ticker, _ := client.Markets.GetTicker(ctx, services.GetTickerParams{Symbol: "SOL_USDC"})
 
     // Obter profundidade do livro de ordens
-    depth, _ := client.Markets.GetDepth(ctx, "SOL_USDC")
+    depth, _ := client.Markets.GetDepth(ctx, services.GetDepthParams{Symbol: "SOL_USDC"})
 
     fmt.Printf("Mercados: %d, Último preço: %s, Profundidade de compra: %d\n",
         len(markets), ticker.LastPrice, len(depth.Bids))
@@ -97,7 +98,7 @@ func main() {
     })
 
     // Obter histórico de ordens
-    history, _ := client.History.GetOrderHistory(ctx, &types.HistoryParams{
+    history, _ := client.History.GetOrderHistory(ctx, &types.OrderHistoryParams{
         Symbol: "SOL_USDC",
     })
 
@@ -150,11 +151,11 @@ func main() {
 | | `System.GetWallets(ctx)` | Obter carteiras suportadas |
 | **Ativos** | `Assets.GetAssets(ctx)` | Obter todos os ativos |
 | | `Assets.GetCollateral(ctx)` | Obter informações de colateral |
-| **Mercados** | `Markets.GetMarkets(ctx)` | Obter todos os mercados |
+| **Mercados** | `Markets.GetMarkets(ctx, params)` | Obter todos os mercados |
 | | `Markets.GetMarket(ctx, symbol)` | Obter mercado específico |
-| | `Markets.GetTicker(ctx, symbol)` | Obter ticker |
-| | `Markets.GetTickers(ctx)` | Obter todos os tickers |
-| | `Markets.GetDepth(ctx, symbol)` | Obter livro de ordens |
+| | `Markets.GetTicker(ctx, params)` | Obter ticker |
+| | `Markets.GetTickers(ctx, params)` | Obter todos os tickers |
+| | `Markets.GetDepth(ctx, params)` | Obter livro de ordens |
 | | `Markets.GetKlines(ctx, params)` | Obter candlesticks |
 | | `Markets.GetMarkPrice(ctx, symbol)` | Obter preço de marca |
 | | `Markets.GetMarkPrices(ctx)` | Obter todos os preços de marca |
@@ -165,7 +166,7 @@ func main() {
 | **Empréstimo** | `BorrowLendMarkets.GetMarkets(ctx)` | Obter mercados de empréstimo |
 | | `BorrowLendMarkets.GetMarketHistory(ctx, params)` | Obter histórico de empréstimo |
 | **Previsão** | `Prediction.GetMarkets(ctx)` | Obter mercados de previsão |
-| | `Prediction.GetTags(ctx)` | Obter tags de previsão |
+| | `Prediction.GetTags(ctx, nil)` | Obter tags de previsão |
 
 ### Métodos do Cliente Autenticado
 
@@ -176,9 +177,9 @@ func main() {
 | | `Account.GetMaxBorrowQuantity(ctx, symbol)` | Obter quantidade máxima de empréstimo |
 | | `Account.GetMaxOrderQuantity(ctx, params)` | Obter tamanho máximo de ordem |
 | | `Account.GetMaxWithdrawalQuantity(ctx, params)` | Obter saque máximo |
-| | `Account.ConvertDust(ctx, symbol)` | Converter poeira para USDC |
+| | `Account.ConvertDust(ctx, &symbol)` | Converter poeira para USDC |
 | **Capital** | `Capital.GetBalances(ctx)` | Obter saldos |
-| | `Capital.GetCollateral(ctx)` | Obter colateral |
+| | `Capital.GetCollateral(ctx, nil)` | Obter colateral |
 | | `Capital.GetDeposits(ctx, params)` | Obter histórico de depósitos |
 | | `Capital.GetDepositAddress(ctx, blockchain)` | Obter endereço de depósito |
 | | `Capital.GetWithdrawals(ctx, params)` | Obter histórico de saques |
@@ -208,18 +209,17 @@ func main() {
 | | `History.GetQuoteFillHistory(ctx, params)` | Obter fills de cotações |
 | **Empréstimo** | `BorrowLend.GetPositions(ctx)` | Obter posições |
 | | `BorrowLend.Execute(ctx, params)` | Emprestar ou tomar emprestado |
-| | `BorrowLend.GetLiquidationPrice(ctx, symbol)` | Obter preço de liquidação |
-| **Posições** | `Positions.GetPositions(ctx)` | Obter posições abertas |
-| | `Positions.GetPosition(ctx, symbol)` | Obter posição específica |
+| | `BorrowLend.GetLiquidationPrice(ctx, params)` | Obter preço de liquidação |
+| **Posições** | `Positions.GetPositions(ctx, params)` | Obter posições abertas |
 | **RFQ** | `RFQ.SubmitRFQ(ctx, params)` | Enviar RFQ |
 | | `RFQ.SubmitQuote(ctx, params)` | Enviar cotação |
-| | `RFQ.AcceptQuote(ctx, params)` | Aceitar cotação |
+| | `RFQ.AcceptQuote(ctx, types.QuoteAcceptParams{QuoteID: quoteId})` | Aceitar cotação |
 | | `RFQ.RefreshRFQ(ctx, rfqId)` | Atualizar RFQ |
-| | `RFQ.CancelRFQ(ctx, rfqId)` | Cancelar RFQ |
+| | `RFQ.CancelRFQ(ctx, types.RFQCancelParams{RfqID: rfqId})` | Cancelar RFQ |
 | **Estratégia** | `Strategy.CreateStrategy(ctx, params)` | Criar estratégia |
-| | `Strategy.GetStrategy(ctx, symbol, strategyId)` | Obter estratégia |
+| | `Strategy.GetStrategy(ctx, strategyId)` | Obter estratégia |
 | | `Strategy.GetOpenStrategies(ctx, symbol)` | Obter estratégias abertas |
-| | `Strategy.CancelStrategy(ctx, symbol, strategyId)` | Cancelar estratégia |
+| | `Strategy.CancelStrategy(ctx, strategyId)` | Cancelar estratégia |
 | | `Strategy.CancelAllStrategies(ctx, symbol)` | Cancelar todas as estratégias |
 
 ### Cliente WebSocket
@@ -273,25 +273,29 @@ func main() {
 import "github.com/solomeowl/backpack-exchange-sdk-go/backpack/enums"
 
 // Relacionadas a ordens
-enums.OrderTypeLimit       // Limit, Market
-enums.SideBid              // Bid, Ask
-enums.TimeInForceGTC       // GTC, IOC, FOK
-enums.SelfTradePreventionAllow
+enums.OrderTypeLimit                  // Limit, Market
+enums.SideBid                         // Bid, Ask
+enums.TimeInForceGTC                  // GTC, IOC, FOK
+enums.SelfTradePreventionRejectTaker  // RejectTaker, RejectMaker, RejectBoth
+enums.OrderStatusNew                  // New, Filled, Cancelled, Expired, PartiallyFilled, TriggerPending, TriggerFailed
 
 // Relacionadas ao mercado
-enums.MarketTypeSpot       // Spot, Perp
-enums.KlineInterval1m      // 1m, 5m, 15m, 1h, 4h, 1d, 1w
+enums.MarketTypeSpot       // SPOT, PERP, IPERP, DATED, PREDICTION, RFQ
+enums.KlineInterval1m      // 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1month
+enums.DepthLimit5          // "5", "10", "20", "50", "100", "500", "1000"
+enums.OrderBookStateOpen   // Open, Closed, CancelOnly, LimitOnly, PostOnly
 
 // Relacionadas ao status
-enums.OrderStatusNew       // New, Filled, Cancelled, etc.
-enums.DepositStatusPending
-enums.WithdrawalStatusPending
+enums.DepositStatusPending            // cancelled, confirmed, declined, expired, initiated, etc.
+enums.WithdrawalStatusPending         // confirmed, ownershipVerificationRequired, pending, etc.
 
-// Blockchain
+// Blockchain (30+ redes suportadas)
 enums.BlockchainSolana
 enums.BlockchainEthereum
-enums.BlockchainPolygon
 enums.BlockchainBitcoin
+enums.BlockchainArbitrum
+enums.BlockchainBase
+// ... e mais
 ```
 
 ## Opções de Configuração
@@ -321,6 +325,14 @@ Veja o diretório [examples](./examples) para exemplos completos de uso:
 Para documentação detalhada da API, visite [Backpack Exchange API Docs](https://docs.backpack.exchange/).
 
 ## Registro de Alterações
+
+### v1.1.0
+- Sincronização de todos os tipos e enumerações com a especificação OpenAPI
+- Atualização de valores de enumeração para corresponder à API (SortDirection, OrderStatus, MarketType, etc.)
+- Expansão da enumeração Blockchain de 4 para 30+ redes
+- Novas enumerações adicionadas: PositionState, OrderBookState, PaymentType, RfqExecutionMode, etc.
+- Correção de definições de tipos: Order, Position, Strategy, RFQ, Capital
+- Atualização de assinaturas de métodos de serviço
 
 ### v1.0.0
 - Lançamento inicial com suporte completo à API
